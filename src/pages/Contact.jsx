@@ -21,13 +21,11 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Basic form validation (can be expanded)
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       alert('Please fill in all fields.');
       return;
     }
-    // Construct mailto link
-    const mailtoLink = `mailto:${contactInfo.find(info => info.label === 'Email').value}?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`)}`;
+    const mailtoLink = `mailto:abhishekadhikari1254@gmail.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`)}`;
     window.location.href = mailtoLink;
   };
 
@@ -37,7 +35,7 @@ const Contact = () => {
       label: 'Email',
       value: 'abhishekadhikari1254@gmail.com',
       href: 'mailto:abhishekadhikari1254@gmail.com',
-      color: 'text-primary' // Updated color class
+      color: 'text-primary'
     },
     {
       icon: PhoneIcon,
