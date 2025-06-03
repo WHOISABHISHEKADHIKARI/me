@@ -19,29 +19,16 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    // Basic form validation (can be expanded)
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       alert('Please fill in all fields.');
       return;
     }
-    try {
-      const response = await fetch('https://formspree.io/f/xanjyabb', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-      if (response.ok) {
-        alert('Message sent successfully!');
-        setFormData({ name: '', email: '', subject: '', message: '' });
-      } else {
-        alert('Failed to send message. Please try again.');
-      }
-    } catch (error) {
-      alert('An error occurred. Please try again later.');
-    }
+    // Construct mailto link
+    const mailtoLink = `mailto:${contactInfo.find(info => info.label === 'Email').value}?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`)}`;
+    window.location.href = mailtoLink;
   };
 
   const contactInfo = [
@@ -50,7 +37,7 @@ const Contact = () => {
       label: 'Email',
       value: 'abhishekadhikari1254@gmail.com',
       href: 'mailto:abhishekadhikari1254@gmail.com',
-      color: 'text-primary'
+      color: 'text-primary' // Updated color class
     },
     {
       icon: PhoneIcon,
@@ -198,8 +185,7 @@ const Contact = () => {
                     required
                     className="w-full pl-3 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 resize-none"
                     placeholder="Your Message..."
-                    style={{ color: 'inherit' }}
-                  />
+                  ></textarea>
                 </div>
                 <motion.button
                   type="submit"

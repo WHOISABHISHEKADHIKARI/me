@@ -33,7 +33,6 @@ const testimonials = [
     id: 4,
     name: "Ishwor Sapkota",
     title: "Chief Executive Officer @ DigiPrabhat",
-    quote: "I have had the pleasure of knowing Abhishek Adhikari for 3 years, both personally and professionally and I am impressed by his dedication, skill, and work ethic.",
     avatar: "",
     rating: 5,
     project: "Cross-team Collaboration"

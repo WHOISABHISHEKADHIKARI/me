@@ -3,7 +3,6 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowDownIcon, SparklesIcon, RocketLaunchIcon, PaintBrushIcon, PencilIcon, UsersIcon, StarIcon } from '@heroicons/react/24/outline';
 import { TypeAnimation } from 'react-type-animation';
-import Breadcrumbs from '../components/Breadcrumbs';
 
 const Home = () => {
   const { scrollY } = useScroll();
@@ -79,19 +78,18 @@ const Home = () => {
 
   return (
     <div className="min-h-screen pt-20">
-      <Breadcrumbs />
+   
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20" aria-label="Introduction">
-        {/* Enhanced background effects */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-sm" />
+        {/* Dynamic background effects */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background to-transparent opacity-90" />
         <div
           className="absolute inset-0"
           style={{
             background: `
-              radial-gradient(1000px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--primary-rgb), 0.15), transparent 70%),
-              radial-gradient(800px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--secondary-rgb), 0.12), transparent 50%),
-              radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--accent-rgb), 0.08), transparent 40%),
-              linear-gradient(to bottom right, rgba(var(--primary-rgb), 0.05), rgba(var(--secondary-rgb), 0.05))
-            `
+              radial-gradient(800px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--primary-rgb), 0.12), transparent 60%),
+              radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--secondary-rgb), 0.08), transparent 40%),
+              radial-gradient(1000px at 50% 0%, rgba(var(--accent-rgb), 0.1), transparent 70%)
+            `,
           }}
         />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
@@ -132,39 +130,23 @@ const Home = () => {
             </motion.div>
           </motion.div>
 
-          <h1 className="sr-only">Abhishek Adhikari - UI/UX Designer & Agri-Tech Specialist</h1>
-          <motion.h2
+          <motion.h1
             variants={itemVariants}
             className="relative text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 pb-1"
           >
             Namaste, I'm{" "}
-            <motion.span 
-              className="relative inline-block"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
+            <span className="relative inline-block">
               Abhishek Adhikari
-              <motion.div 
-                className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-accent/50 rounded-full"
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              />
-              <motion.div
-                className="absolute -inset-x-4 -inset-y-2 bg-primary/10 rounded-lg z-[-1]"
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.span>
-          </motion.h2>
-          <motion.h3
+              <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-accent/50 rounded-full" />
+            </span>
+          </motion.h1>
+          <motion.h2
             variants={itemVariants}
             className="text-xl sm:text-2xl lg:text-3xl font-medium text-muted-foreground/90 mb-6 max-w-3xl mx-auto leading-relaxed"
           >
             <span className="text-foreground/95">UI/UX Expert & Agri-Tech Innovator</span>{" "}
             <span className="text-muted-foreground/75">crafting intuitive digital experiences that bridge technology and agriculture</span>
-          </motion.h3>
+          </motion.h2>
 
           <motion.div variants={itemVariants} className="mb-10">
             <div className="text-xl md:text-2xl lg:text-3xl font-medium h-16 flex items-center justify-center">

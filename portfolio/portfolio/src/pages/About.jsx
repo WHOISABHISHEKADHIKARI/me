@@ -1153,7 +1153,7 @@ const About = () => {
                   </motion.button>
                   
                   <motion.button
-                    onClick={() => window.open('./Abhishek-Adhikari-FlowCV-Resume-20250531.pdf', '_blank')}
+                    onClick={() => window.open('/Abhishek-Adhikari-FlowCV-Resume-20250531.pdf', '_blank')}
                     whileHover={{ 
                       scale: 1.05,
                       boxShadow: "0 20px 40px rgba(255, 255, 255, 0.1)"
