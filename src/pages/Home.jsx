@@ -13,11 +13,20 @@ const Home = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
   useEffect(() => {
+    // Throttle the mousemove event to improve performance
+    let ticking = false;
+    
     const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setMousePosition({ x: e.clientX, y: e.clientY });
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
@@ -77,17 +86,16 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 overflow-y-auto overflow-x-hidden">
    
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20" aria-label="Introduction">
-        {/* Dynamic background effects */}
+        {/* Dynamic background effects - optimized for performance */}
         <div className="absolute inset-0 bg-gradient-to-b from-background to-transparent opacity-90" />
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 will-change-transform"
           style={{
             background: `
-              radial-gradient(800px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--primary-rgb), 0.12), transparent 60%),
-              radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--secondary-rgb), 0.08), transparent 40%),
+              radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--primary-rgb), 0.08), transparent 60%),
               radial-gradient(1000px at 50% 0%, rgba(var(--accent-rgb), 0.1), transparent 70%)
             `,
           }}
@@ -206,13 +214,14 @@ const Home = () => {
             </motion.div>
           </motion.div>
 
-          {/* Scroll Indicator */}
+          {/* Scroll Indicator - improved for better performance */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
             className="fixed bottom-8 inset-x-0 mx-auto w-max flex flex-col items-center gap-2 cursor-pointer group z-20"
             onClick={() => {
+              // Use native scrolling for better performance
               const skillsSection = document.querySelector('section.py-20.md\\:py-28');
               if (skillsSection) {
                 skillsSection.scrollIntoView({ behavior: 'smooth' });
@@ -225,7 +234,7 @@ const Home = () => {
             <span className="text-sm text-muted-foreground/70">Scroll to explore</span>
             <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/20 flex items-start justify-center p-1.5">
               <motion.div
-                className="w-1.5 h-2.5 rounded-full bg-muted-foreground/50"
+                className="w-1.5 h-2.5 rounded-full bg-muted-foreground/50 will-change-transform"
                 animate={{
                   y: [0, 12, 0],
                 }}
@@ -240,7 +249,7 @@ const Home = () => {
         </motion.div>
       </section>
 
-      {/* Skills Section */}
+      {/* Skills Section - optimized animations */}
       <motion.section 
         className="py-20 md:py-28 relative z-10"
         initial={{ opacity: 0 }}
