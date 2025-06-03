@@ -77,16 +77,46 @@ const Sabhi = () => {
 
   const correctPassword = '1254'; // You can change this to any password you want
 
-  // Check if device is mobile
+  // Improved mobile detection with touch capability check
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      const isMobileDevice = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+      setIsMobile(isMobileDevice);
     };
     
     checkMobile();
     window.addEventListener('resize', checkMobile);
     
-    return () => window.removeEventListener('resize', checkMobile);
+    // Prevent pull-to-refresh on mobile browsers but allow scrolling
+    const preventPullToRefresh = (e) => {
+      if (e.touches.length !== 1) return;
+      const touchY = e.touches[0].clientY;
+      // Only prevent default when at the top of the page and pulling down
+      if (window.scrollY === 0 && touchY > 10) {
+        e.preventDefault();
+      }
+    };
+
+    // Add passive touch listeners for better scrolling performance
+    document.addEventListener('touchstart', preventPullToRefresh, { passive: false });
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      document.removeEventListener('touchstart', preventPullToRefresh);
+    };
+  }, []);
+
+  // Debounced touch move handler for better performance
+  const handleTouchMove = useCallback((e) => {
+    // Don't prevent default scrolling behavior here
+    if (!containerRef.current) return;
+    
+    const touch = e.touches[0];
+    const rect = containerRef.current.getBoundingClientRect();
+    setMousePosition({
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    });
   }, []);
 
   const handlePasswordSubmit = () => {
@@ -184,13 +214,10 @@ const Sabhi = () => {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen relative overflow-hidden bg-gradient-to-br from-rose-900 via-purple-900 to-pink-900 animate-gradient-shift"
+      className="min-h-screen relative overflow-y-auto overflow-x-hidden bg-gradient-to-br from-rose-900 via-purple-900 to-pink-900 animate-gradient-shift"
       onMouseMove={handleMouseMove}
-      onTouchMove={(e) => {
-        // Prevent default to avoid browser refresh on pull down
-        e.preventDefault();
-      }}
-      style={{ touchAction: 'none' }} // Prevent pull-to-refresh on mobile
+      onTouchMove={handleTouchMove}
+      style={{ touchAction: 'pan-y' }} // Allow vertical scrolling but prevent horizontal
     >
       <motion.div
         className="absolute inset-0 opacity-40"
@@ -217,17 +244,17 @@ const Sabhi = () => {
 
       {showParticles && (
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(isMobile ? 20 : 50)].map((_, i) => (
-            <LuxuryParticle key={i} delay={i * 0.1} isMobile={isMobile} />
+          {[...Array(isMobile ? 10 : 50)].map((_, i) => (
+            <LuxuryParticle key={i} delay={i * (isMobile ? 0.2 : 0.1)} isMobile={isMobile} />
           ))}
         </div>
       )}
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 overflow-y-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`max-w-4xl mx-auto text-center space-y-12 bg-black/30 backdrop-blur-3xl ${isMobile ? 'p-8 rounded-[2rem]' : 'p-16 rounded-[3rem]'} shadow-2xl border border-amber-500/20`}
+          className={`max-w-4xl mx-auto text-center space-y-12 bg-black/30 backdrop-blur-3xl ${isMobile ? 'p-6 rounded-[1.5rem]' : 'p-16 rounded-[3rem]'} shadow-2xl border border-amber-500/20`}
         >
           <AnimatePresence mode="wait">
             {phases.map((phase, index) => (
