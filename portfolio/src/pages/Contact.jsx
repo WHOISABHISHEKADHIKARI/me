@@ -26,12 +26,20 @@ const Contact = () => {
       return;
     }
     try {
+      const form = e.target;
+      const formDataObj = new FormData(form);
       const response = await fetch('https://formspree.io/f/xanjyabb', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: new FormData(e.target)
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message
+        })
       });
       if (response.ok) {
         alert('Message sent successfully!');
@@ -152,6 +160,7 @@ const Contact = () => {
               <form
                 action="https://formspree.io/f/xanjyabb"
                 method="POST"
+                encType="multipart/form-data"
                 onSubmit={handleSubmit}
                 className="space-y-5"
               >

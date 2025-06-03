@@ -1,8 +1,15 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 
 const NotFound = () => {
+  // Handle 404 error tracking
+  useEffect(() => {
+    // Log 404 error for analytics
+    console.error('404 Error: Page not found -', window.location.pathname);
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -51,7 +58,7 @@ const NotFound = () => {
             transition={{ delay: 0.6, duration: 0.6 }}
             className="text-base md:text-lg text-muted-foreground mb-8"
           >
-            Oops! The page you're looking for might have been removed, had its name changed, or is temporarily unavailable.
+            Oops! The page <strong>{window.location.pathname}</strong> you're looking for might have been removed, had its name changed, or is temporarily unavailable.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
