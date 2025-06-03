@@ -29,9 +29,9 @@ const Contact = () => {
       const response = await fetch('https://formspree.io/f/xanjyabb', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Accept': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: new FormData(e.target)
       });
       if (response.ok) {
         alert('Message sent successfully!');
@@ -40,6 +40,7 @@ const Contact = () => {
         alert('Failed to send message. Please try again.');
       }
     } catch (error) {
+      console.error('Form submission error:', error);
       alert('An error occurred. Please try again later.');
     }
   };
@@ -148,7 +149,12 @@ const Contact = () => {
               <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6">
                 Send Me a Message
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form
+                action="https://formspree.io/f/xanjyabb"
+                method="POST"
+                onSubmit={handleSubmit}
+                className="space-y-5"
+              >
                 <div className="relative">
                   <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <input
