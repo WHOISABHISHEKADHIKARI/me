@@ -74,6 +74,7 @@ const Sabhi = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [playedSounds, setPlayedSounds] = useState(false);
   const containerRef = useRef(null);
   const touchStartY = useRef(0);
 
@@ -205,6 +206,46 @@ const Sabhi = () => {
       }
     }
   }, [showRing, isMobile]);
+
+  // Play telephone and kiss sounds after proposal acceptance
+  useEffect(() => {
+    if (showRing && !playedSounds) {
+      // Set flag to prevent playing sounds multiple times
+      setPlayedSounds(true);
+      
+      // Play telephone ringing sound
+      setTimeout(() => {
+        try {
+          const telephoneSound = new Audio('https://assets.mixkit.co/active_storage/sfx/1513/1513-preview.mp3');
+          telephoneSound.volume = 0.4;
+          telephoneSound.play().catch(error => {
+            console.log("Telephone sound failed:", error);
+          });
+          
+          // Play kiss sound after telephone sound
+          setTimeout(() => {
+            try {
+              const kissSound = new Audio('https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3');
+              kissSound.volume = 0.6;
+              kissSound.play().catch(error => {
+                console.log("Kiss sound failed:", error);
+              });
+              
+              // Add I love you text with animation
+              const loveTextContainer = document.querySelector('.love-text-container');
+              if (loveTextContainer) {
+                loveTextContainer.style.opacity = '1';
+              }
+            } catch (error) {
+              console.log("Kiss sound error:", error);
+            }
+          }, 3000); // Play kiss sound after 3 seconds
+        } catch (error) {
+          console.log("Telephone sound error:", error);
+        }
+      }, 1500); // Start telephone sound after 1.5 seconds
+    }
+  }, [showRing, playedSounds]);
 
   // Optimized mouse move handler with throttling
   const handleMouseMove = useCallback((e) => {
@@ -361,7 +402,7 @@ const Sabhi = () => {
                 >
                   To unlock the treasure of my heart's deepest desire...
                 </motion.p>
-              </motion.div>
+          
               
               <div className="flex flex-col items-center gap-4">
                 <motion.div
@@ -439,7 +480,7 @@ const Sabhi = () => {
                     transition={{ type: 'spring', damping: 12 }}
                     className="bg-gradient-to-r from-rose-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-md border border-pink-400/30 rounded-full px-8 py-4 shadow-[0_0_20px_rgba(244,114,182,0.3)]"
                   >
-                    <motion.div className="flex flex-col items-center gap-2">
+                    <motion.div className="flex flex-col items-center gap-4">
                       <motion.p
                         animate={{
                           color: ['rgb(244,114,182)', 'rgb(236,72,153)', 'rgb(244,114,182)'],
@@ -616,6 +657,24 @@ const Sabhi = () => {
                       Thank you for saying yes!
                     </motion.span>
                   </motion.h3>
+
+                  {/* I Love You text that appears after kiss sound */}
+                  <motion.div 
+                    className="love-text-container mt-4"
+                    initial={{ opacity: 0 }}
+                    style={{ opacity: 0 }} /* Initial hidden state controlled by JS */
+                  >
+                    <motion.p
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        color: ['rgb(251,191,36)', 'rgb(244,114,182)', 'rgb(251,191,36)']
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                      className="text-2xl font-bold font-serif italic"
+                    >
+                      I love you! 💋
+                    </motion.p>
+                  </motion.div>
 
                   <motion.div 
                     initial={{ opacity: 0 }}
