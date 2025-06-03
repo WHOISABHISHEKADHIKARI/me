@@ -115,15 +115,15 @@ const Contact = () => {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center shadow-lg"
+                  className="bg-muted/20 border border-border rounded-lg p-6 text-center shadow-lg"
                 >
                   <div className="flex items-center justify-center mb-4">
-                    <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-12 h-12 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold text-green-800 dark:text-green-200 mb-2">Message Sent Successfully!</h3>
-                  <p className="text-green-700 dark:text-green-300">Thank you for reaching out. I'll get back to you as soon as possible.</p>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Message Sent Successfully!</h3>
+                  <p className="text-muted-foreground">Thank you for reaching out. I'll get back to you as soon as possible.</p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
@@ -134,7 +134,7 @@ const Contact = () => {
                       id="name"
                       name="name"
                       required
-                      className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                      className="w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
                       placeholder="Your Name"
                     />
                     <ValidationError prefix="Name" field="name" errors={state.errors} />
@@ -146,7 +146,7 @@ const Contact = () => {
                       id="email"
                       name="email"
                       required
-                      className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                      className="w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
                       placeholder="Your Email"
                     />
                     <ValidationError prefix="Email" field="email" errors={state.errors} />
@@ -158,7 +158,7 @@ const Contact = () => {
                       id="subject"
                       name="subject"
                       required
-                      className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                      className="w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
                       placeholder="Subject"
                     />
                     <ValidationError prefix="Subject" field="subject" errors={state.errors} />
@@ -169,7 +169,7 @@ const Contact = () => {
                       name="message"
                       rows={5}
                       required
-                      className="w-full pl-3 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 resize-none"
+                      className="w-full pl-3 pr-3 py-2.5 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 resize-none"
                       placeholder="Your Message..."
                     ></textarea>
                     <ValidationError prefix="Message" field="message" errors={state.errors} />
@@ -178,13 +178,13 @@ const Contact = () => {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 mt-4"
+                      className="bg-muted/20 border border-error/50 rounded-lg p-4 mt-4"
                     >
                       <div className="flex items-center">
-                        <svg className="w-5 h-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-error mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <p className="text-red-700 dark:text-red-300 text-sm">
+                        <p className="text-error text-sm">
                           {state.errors.map(error => error.message).join('. ')}
                         </p>
                       </div>
@@ -227,7 +227,7 @@ const Contact = () => {
                       viewport={{ once: true }}
                       className="flex items-center group"
                     >
-                      <div className={`p-3 rounded-lg bg-primary/10 ${item.color} mr-4 shadow-sm`}>
+                      <div className={`p-3 rounded-lg bg-primary/10 text-primary mr-4 shadow-sm`}>
                         <item.icon className="h-6 w-6" />
                       </div>
                       <div>
