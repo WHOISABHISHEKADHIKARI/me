@@ -2,7 +2,7 @@ import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const LuxuryParticle = ({ delay, isMobile }) => {
-  const randomPath = Array.from({ length: isMobile ? 3 : 5 }, () => ({
+  const randomPath = Array.from({ length: isMobile ? 2 : 4 }, () => ({
     x: Math.random() * 600 - 300,
     y: Math.random() * -400
   }));
@@ -17,7 +17,7 @@ const LuxuryParticle = ({ delay, isMobile }) => {
         opacity: [0, 0.8, 0.2, 0],
       }}
       transition={{
-        duration: isMobile ? 15 : 20,
+        duration: isMobile ? 12 : 20,
         delay: delay,
         ease: 'linear',
         times: [0, 0.2, 0.8, 1],
@@ -73,78 +73,74 @@ const Sabhi = () => {
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
   const containerRef = useRef(null);
+  const touchStartY = useRef(0);
 
   const correctPassword = '1254'; // You can change this to any password you want
 
-  // Improved mobile detection with iOS detection
+  // Improved mobile and iOS detection
   useEffect(() => {
-    const checkMobile = () => {
+    const checkDevice = () => {
       const isMobileDevice = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
       setIsMobile(isMobileDevice);
+      
+      // Detect iOS devices
+      const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      setIsIOS(isIOSDevice);
     };
     
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
     
-    // iOS-specific scrolling fix
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    // Set body and document overflow to allow scrolling
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'auto';
     
-    // Only apply pull-to-refresh prevention, not general scrolling prevention
-    const preventPullToRefresh = (e) => {
-      // Don't interfere with multi-touch gestures
-      if (e.touches.length !== 1) return;
-      
+    // Prevent only pull-to-refresh, not scrolling
+    const handleTouchStart = (e) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+    
+    const handleTouchMove = (e) => {
       const touchY = e.touches[0].clientY;
-      // Only prevent default when at the top of the page and pulling down significantly
-      // This allows normal scrolling to work while preventing only the refresh gesture
-      if (window.scrollY <= 5 && touchY > 30 && e.cancelable) {
+      const deltaY = touchY - touchStartY.current;
+      
+      // Only prevent default when at the top of the page and pulling down
+      // This allows normal scrolling to work
+      if (window.scrollY <= 0 && deltaY > 30 && e.cancelable) {
         e.preventDefault();
       }
     };
-
-    // For iOS, we need a different approach to handle scrolling
-    if (isIOS) {
-      // Make sure the body and html are scrollable
-      document.body.style.overflow = 'auto';
-      document.documentElement.style.overflow = 'auto';
-      document.body.style.height = '100%';
-      document.documentElement.style.height = '100%';
-      
-      // Add touch handlers with correct passive settings
-      document.addEventListener('touchstart', preventPullToRefresh, { passive: false });
-      document.addEventListener('touchmove', (e) => {
-        // Allow default scrolling behavior in most cases
-        // Only prevent the pull-to-refresh gesture
-        if (window.scrollY <= 5 && e.touches[0].clientY > 30 && e.cancelable) {
-          e.preventDefault();
-        }
-      }, { passive: false });
-    } else {
-      // Non-iOS devices
-      document.addEventListener('touchstart', preventPullToRefresh, { passive: false });
-    }
+    
+    // Add event listeners with proper passive settings
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
     
     return () => {
-      window.removeEventListener('resize', checkMobile);
-      document.removeEventListener('touchstart', preventPullToRefresh);
-      if (isIOS) {
-        document.removeEventListener('touchmove', preventPullToRefresh);
-      }
+      window.removeEventListener('resize', checkDevice);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      
+      // Reset styles
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, []);
 
-  // Debounced touch move handler for better performance
+  // Optimized touch move handler with throttling
   const handleTouchMove = useCallback((e) => {
-    // Don't prevent default scrolling behavior here
     if (!containerRef.current) return;
     
-    const touch = e.touches[0];
-    const rect = containerRef.current.getBoundingClientRect();
-    setMousePosition({
-      x: touch.clientX - rect.left,
-      y: touch.clientY - rect.top
+    // Use requestAnimationFrame for better performance
+    requestAnimationFrame(() => {
+      const touch = e.touches[0];
+      const rect = containerRef.current.getBoundingClientRect();
+      setMousePosition({
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top
+      });
     });
   }, []);
 
@@ -210,14 +206,17 @@ const Sabhi = () => {
     }
   }, [showRing, isMobile]);
 
-  // Debounce mouse move handler for better performance
+  // Optimized mouse move handler with throttling
   const handleMouseMove = useCallback((e) => {
     if (!containerRef.current || isMobile) return;
     
-    const rect = containerRef.current.getBoundingClientRect();
-    setMousePosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+    // Use requestAnimationFrame for better performance
+    requestAnimationFrame(() => {
+      const rect = containerRef.current.getBoundingClientRect();
+      setMousePosition({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
     });
   }, [isMobile]);
 
@@ -243,13 +242,17 @@ const Sabhi = () => {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen relative overflow-y-auto overflow-x-hidden bg-gradient-to-br from-rose-900 via-purple-900 to-pink-900 animate-gradient-shift"
+      className="min-h-screen relative bg-gradient-to-br from-rose-900 via-purple-900 to-pink-900 animate-gradient-shift"
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
       style={{
-        touchAction: 'auto', // Allow all touch actions by default
+        touchAction: 'pan-y', // Allow vertical scrolling
         WebkitOverflowScrolling: 'touch', // Enable momentum scrolling on iOS
         overscrollBehavior: 'none', // Prevent pull-to-refresh on modern browsers
+        height: '100%',
+        width: '100%',
+        overflowX: 'hidden',
+        overflowY: 'auto',
       }}
     >
       <motion.div
@@ -277,17 +280,17 @@ const Sabhi = () => {
 
       {showParticles && (
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(isMobile ? 10 : 50)].map((_, i) => (
-            <LuxuryParticle key={i} delay={i * (isMobile ? 0.2 : 0.1)} isMobile={isMobile} />
+          {[...Array(isMobile ? 5 : 20)].map((_, i) => (
+            <LuxuryParticle key={i} delay={i * (isMobile ? 0.4 : 0.2)} isMobile={isMobile} />
           ))}
         </div>
       )}
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 overflow-visible">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`max-w-4xl mx-auto text-center space-y-12 bg-black/30 backdrop-blur-3xl ${isMobile ? 'p-6 rounded-[1.5rem]' : 'p-16 rounded-[3rem]'} shadow-2xl border border-amber-500/20`}
+          className={`max-w-4xl mx-auto text-center space-y-12 bg-black/30 backdrop-blur-3xl ${isMobile ? 'p-4 rounded-[1.5rem]' : 'p-12 rounded-[3rem]'} shadow-2xl border border-amber-500/20`}
         >
           <AnimatePresence mode="wait">
             {phases.map((phase, index) => (
@@ -310,16 +313,16 @@ const Sabhi = () => {
                       // Simple rendering for mobile to improve performance
                       phase.text
                     ) : (
-                      // Fancy word-by-word animation for desktop
+                      // Simplified word animation for desktop - reduced complexity
                       phase.text.split(' ').map((word, i) => (
                         <motion.span
                           key={i}
-                          initial={{ opacity: 0, y: 20, rotateX: 90 }}
-                          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                          transition={{ delay: i * 0.1, type: "spring", stiffness: 100 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: i * 0.05, duration: 0.5 }}
                           className="inline-block mx-1"
                         >
-                          <GlowingText>{word}</GlowingText>
+                          {word}
                         </motion.span>
                       ))
                     )}
