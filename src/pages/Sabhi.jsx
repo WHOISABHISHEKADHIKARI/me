@@ -1,10 +1,10 @@
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const LuxuryParticle = ({ delay, isMobile }) => {
   const randomPath = Array.from({ length: isMobile ? 2 : 4 }, () => ({
     x: Math.random() * 600 - 300,
-    y: Math.random() * -400
+    y: Math.random() * -400,
   }));
 
   return (
@@ -18,48 +18,12 @@ const LuxuryParticle = ({ delay, isMobile }) => {
       }}
       transition={{
         duration: isMobile ? 12 : 20,
-        delay: delay,
+        delay,
         ease: 'linear',
         times: [0, 0.2, 0.8, 1],
       }}
       className={`absolute w-${isMobile ? '1' : '2'} h-${isMobile ? '1' : '2'} rounded-full bg-amber-400/30 shadow-lg shadow-amber-400/20`}
     />
-  );
-};
-
-const GlowingText = ({ children, color = "amber" }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const controls = useAnimation();
-
-  useEffect(() => {
-    controls.start({
-      opacity: [0.8, 1, 0.8],
-      scale: isHovered ? [1, 1.1, 1] : 1,
-      textShadow: [
-        '0 0 20px rgba(251,191,36,0.3)',
-        '0 0 40px rgba(251,191,36,0.5)',
-        '0 0 60px rgba(251,191,36,0.3)'
-      ],
-    });
-  }, [isHovered, controls]);
-
-  return (
-    <motion.span
-      animate={controls}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      transition={{ 
-        duration: isHovered ? 1.5 : 3,
-        repeat: Infinity, 
-        ease: isHovered ? "easeOutElastic" : "easeInOut"
-      }}
-      className={`text-${color}-600 font-serif italic cursor-pointer select-none hover:text-${color}-400 transition-colors duration-300`}
-      whileHover={{
-        scale: 1.1,
-      }}
-    >
-      {children}
-    </motion.span>
   );
 };
 
@@ -73,252 +37,206 @@ const Sabhi = () => {
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [playedSounds, setPlayedSounds] = useState(false);
+  const [showExitMessage, setShowExitMessage] = useState(false);
   const containerRef = useRef(null);
   const touchStartY = useRef(0);
 
-  const correctPassword = '1254'; // You can change this to any password you want
+  const correctPassword = '1254';
 
-  // Improved mobile and iOS detection
+  // Mobile detection and scroll handling
   useEffect(() => {
     const checkDevice = () => {
-      const isMobileDevice = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
-      setIsMobile(isMobileDevice);
-      
-      // Detect iOS devices
-      const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      setIsIOS(isIOSDevice);
+      setIsMobile(window.innerWidth < 768 || navigator.maxTouchPoints > 0);
     };
-    
+
     checkDevice();
     window.addEventListener('resize', checkDevice);
-    
-    // Set body and document overflow to allow scrolling
-    document.body.style.overflow = 'auto';
-    document.documentElement.style.overflow = 'auto';
-    
-    // Prevent only pull-to-refresh, not scrolling
+
+    // Prevent pull-to-refresh while allowing scrolling
     const handleTouchStart = (e) => {
       touchStartY.current = e.touches[0].clientY;
     };
-    
+
     const handleTouchMove = (e) => {
       const touchY = e.touches[0].clientY;
       const deltaY = touchY - touchStartY.current;
-      
-      // Only prevent default when at the top of the page and pulling down
-      // This allows normal scrolling to work
+
       if (window.scrollY <= 0 && deltaY > 30 && e.cancelable) {
         e.preventDefault();
       }
     };
-    
-    // Add event listeners with proper passive settings
+
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
     document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    
+
     return () => {
       window.removeEventListener('resize', checkDevice);
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchmove', handleTouchMove);
-      
-      // Reset styles
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
     };
   }, []);
 
-  // Optimized touch move handler with throttling
+  // Throttled mouse/touch move handler
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!containerRef.current || isMobile) return;
+      requestAnimationFrame(() => {
+        const rect = containerRef.current.getBoundingClientRect();
+        setMousePosition({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+      });
+    },
+    [isMobile]
+  );
+
   const handleTouchMove = useCallback((e) => {
     if (!containerRef.current) return;
-    
-    // Use requestAnimationFrame for better performance
     requestAnimationFrame(() => {
       const touch = e.touches[0];
       const rect = containerRef.current.getBoundingClientRect();
       setMousePosition({
         x: touch.clientX - rect.left,
-        y: touch.clientY - rect.top
+        y: touch.clientY - rect.top,
       });
     });
   }, []);
 
+  // Password handling
   const handlePasswordSubmit = () => {
     if (password === correctPassword) {
       setIsPasswordCorrect(true);
       setShowPasswordError(false);
       setShowSuccess(true);
-      
-      // Hide success message after 3 seconds
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
+      setTimeout(() => setShowSuccess(false), 3000);
     } else {
       setShowPasswordError(true);
       setPassword('');
-      
-      // Hide error message after 3 seconds
-      setTimeout(() => {
-        setShowPasswordError(false);
-      }, 3000);
+      setTimeout(() => setShowPasswordError(false), 3000);
     }
   };
 
-  // Increment phases with delay
+  // Phase progression
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentPhase < phases.length - 1) {
-        setCurrentPhase(prev => prev + 1);
+        setCurrentPhase((prev) => prev + 1);
       }
     }, 6000);
-
     return () => clearTimeout(timer);
   }, [currentPhase]);
 
-  // Show particles with delay
+  // Particle display
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowParticles(true);
-    }, 2000);
-
+    const timer = setTimeout(() => setShowParticles(true), 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Play sound when ring is shown
+  // Exit message on page unload
   useEffect(() => {
-    if (showRing && !isMobile) {
-      setShowParticles(true);
-      try {
-        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2/2.wav');
-        audio.volume = 0.5; // Lower volume
-        const playPromise = audio.play();
-        
-        // Handle play promise to avoid uncaught errors
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log("Audio play failed:", error);
-          });
-        }
-      } catch (error) {
-        console.log("Audio error:", error);
-      }
-    }
-  }, [showRing, isMobile]);
-
-  // Play telephone and kiss sounds after proposal acceptance
-  useEffect(() => {
-    if (showRing && !playedSounds) {
-      // Set flag to prevent playing sounds multiple times
-      setPlayedSounds(true);
-      
-      // Play telephone ringing sound
-      setTimeout(() => {
-        try {
-          const telephoneSound = new Audio('https://assets.mixkit.co/active_storage/sfx/1513/1513-preview.mp3');
-          telephoneSound.volume = 0.4;
-          telephoneSound.play().catch(error => {
-            console.log("Telephone sound failed:", error);
-          });
-          
-          // Play kiss sound after telephone sound
-          setTimeout(() => {
-            try {
-              const kissSound = new Audio('https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3');
-              kissSound.volume = 0.6;
-              kissSound.play().catch(error => {
-                console.log("Kiss sound failed:", error);
-              });
-              
-              // Add I love you text with animation
-              const loveTextContainer = document.querySelector('.love-text-container');
-              if (loveTextContainer) {
-                loveTextContainer.style.opacity = '1';
-              }
-            } catch (error) {
-              console.log("Kiss sound error:", error);
-            }
-          }, 3000); // Play kiss sound after 3 seconds
-        } catch (error) {
-          console.log("Telephone sound error:", error);
-        }
-      }, 1500); // Start telephone sound after 1.5 seconds
-    }
-  }, [showRing, playedSounds]);
-
-  // Optimized mouse move handler with throttling
-  const handleMouseMove = useCallback((e) => {
-    if (!containerRef.current || isMobile) return;
-    
-    // Use requestAnimationFrame for better performance
-    requestAnimationFrame(() => {
-      const rect = containerRef.current.getBoundingClientRect();
-      setMousePosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      });
-    });
-  }, [isMobile]);
+    const handleBeforeUnload = (e) => {
+      setShowExitMessage(true);
+      const message = "I love and miss you";
+      e.returnValue = message;
+      return message;
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   const phases = [
     {
-      text: "From the moment our paths intertwined, my world transformed into a canvas of endless possibilities. Every heartbeat whispers your name, every dream wears your smile. You are the melody that makes my life a beautiful symphony.",
-      className: "text-rose-400"
+      text: 'From the moment our paths intertwined, my world transformed into a canvas of endless possibilities. Every heartbeat whispers your name, every dream wears your smile. You are the melody that makes my life a beautiful symphony.',
+      className: 'text-rose-400',
     },
     {
       text: "Through seven magical years, we've painted our story with colors of joy, trust, and unconditional love. Each moment with you feels like a precious gem, sparkling with memories we've crafted together, dreams we've woven into reality.",
-      className: "text-purple-400"
+      className: 'text-purple-400',
     },
     {
-      text: "In the garden of my heart, your love blooms eternal like an enchanted rose. You are my north star, my safe harbor, my reason to believe in magic. With you, every ordinary day becomes an extraordinary adventure.",
-      className: "text-pink-400"
+      text: 'In the garden of my heart, your love blooms eternal like an enchanted rose. You are my north star, my safe harbor, my reason to believe in magic. With you, every ordinary day becomes an extraordinary adventure.',
+      className: 'text-pink-400',
     },
     {
-      text: "Today, as I hold this moment in my trembling hands, I want to ask you something that will bridge our past of beautiful memories with a future of endless possibilities. My heart beats in anticipation of your answer...",
-      className: "text-amber-400"
-    }
+      text: 'Today, as I hold this moment in my trembling hands, I want to ask you something that will bridge our past of beautiful memories with a future of endless possibilities. My heart beats in anticipation of your answer...',
+      className: 'text-amber-400',
+    },
   ];
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className="min-h-screen relative bg-gradient-to-br from-rose-900 via-purple-900 to-pink-900 animate-gradient-shift"
+      className="min-h-screen relative bg-gradient-to-br from-rose-900 via-purple-900 to-pink-900"
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
       style={{
-        touchAction: 'pan-y', // Allow vertical scrolling
-        WebkitOverflowScrolling: 'touch', // Enable momentum scrolling on iOS
-        overscrollBehavior: 'none', // Prevent pull-to-refresh on modern browsers
+        touchAction: 'pan-y',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'none',
         height: '100%',
         width: '100%',
         overflowX: 'hidden',
         overflowY: 'auto',
       }}
     >
+      {/* Exit Message */}
+      <AnimatePresence>
+        {showExitMessage && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="text-4xl md:text-6xl font-bold text-white text-center"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+            >
+              I love and miss you
+              <motion.div
+                className="text-rose-400 mt-4 text-xl md:text-2xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                ❤️ Forever and Always ❤️
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Background Gradient Animation */}
       <motion.div
         className="absolute inset-0 opacity-40"
         animate={{
           background: [
             'radial-gradient(circle at 20% 20%, rgba(244,114,182,0.2) 0%, transparent 50%)',
             'radial-gradient(circle at 80% 80%, rgba(216,180,254,0.2) 0%, transparent 50%)',
-            'radial-gradient(circle at 50% 50%, rgba(251,113,133,0.2) 0%, transparent 50%)'
-          ]
+            'radial-gradient(circle at 50% 50%, rgba(251,113,133,0.2) 0%, transparent 50%)',
+          ],
         }}
         transition={{ duration: 10, repeat: Infinity }}
       />
 
-      {mousePosition.x > 0 && !isMobile && (
+      {/* Mouse Glow Effect (Desktop Only) */}
+      {!isMobile && mousePosition.x > 0 && (
         <motion.div
           className="absolute w-64 h-64 rounded-full bg-gradient-to-r from-rose-500/10 via-purple-500/10 to-pink-500/10 blur-3xl pointer-events-none"
           animate={{
             x: mousePosition.x - 128,
             y: mousePosition.y - 128,
           }}
-          transition={{ type: "spring", damping: 10, mass: 0.1 }}
+          transition={{ type: 'spring', damping: 10, mass: 0.1 }}
         />
       )}
 
+      {/* Particles */}
       {showParticles && (
         <div className="absolute inset-0 pointer-events-none">
           {[...Array(isMobile ? 5 : 20)].map((_, i) => (
@@ -327,451 +245,314 @@ const Sabhi = () => {
         </div>
       )}
 
+      {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`max-w-4xl mx-auto text-center space-y-12 bg-black/30 backdrop-blur-3xl ${isMobile ? 'p-4 rounded-[1.5rem]' : 'p-12 rounded-[3rem]'} shadow-2xl border border-amber-500/20`}
+          className={`max-w-4xl mx-auto text-center space-y-12 bg-black/30 backdrop-blur-3xl ${
+            isMobile ? 'p-4 rounded-3xl' : 'p-12 rounded-3xl'
+          } shadow-2xl border border-amber-500/20`}
         >
           <AnimatePresence mode="wait">
-            {phases.map((phase, index) => (
-              currentPhase >= index && (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  className="space-y-8"
-                >
-                  <motion.p 
-                    className={`${isMobile ? 'text-lg' : 'text-2xl'} leading-relaxed font-serif ${phase.className}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1.5, delay: 0.5 }}
-                  >
-                    {isMobile ? (
-                      // Simple rendering for mobile to improve performance
-                      phase.text
-                    ) : (
-                      // Simplified word animation for desktop - reduced complexity
-                      phase.text.split(' ').map((word, i) => (
-                        <motion.span
-                          key={i}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: i * 0.05, duration: 0.5 }}
-                          className="inline-block mx-1"
-                        >
-                          {word}
-                        </motion.span>
-                      ))
-                    )}
-                  </motion.p>
-                </motion.div>
-              )
-            ))}
-          </AnimatePresence>
-
-          {currentPhase >= 3 && !isPasswordCorrect && (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 80, delay: 1 }}
-              className="space-y-8 relative"
-            >
-              <motion.div className="space-y-4 mb-8">
-                <motion.h3
-                  className={`${isMobile ? 'text-2xl' : 'text-3xl'} bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent font-serif italic`}
-                  animate={{
-                    textShadow: [
-                      '0 0 25px rgba(244,114,182,0.3)',
-                      '0 0 50px rgba(216,180,254,0.5)',
-                      '0 0 25px rgba(251,113,133,0.3)'
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  Whisper the Secret Words
-                </motion.h3>
-                <motion.p
-                  className="text-lg text-pink-300/80 font-light"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  To unlock the treasure of my heart's deepest desire...
-                </motion.p>
-          
-              
-              <div className="flex flex-col items-center gap-4">
-                <motion.div
-                  className="relative group w-72"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                >
-                  <motion.input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-                    placeholder="✨ Enter the magic words ✨"
-                    className="w-full px-8 py-4 text-center text-xl bg-gradient-to-r from-rose-500/10 via-purple-500/10 to-pink-500/10 text-pink-300 border-2 border-pink-500/30 rounded-full focus:outline-none focus:border-purple-400 placeholder-pink-300/50 backdrop-blur-md shadow-[0_0_15px_rgba(244,114,182,0.1)]"
-                    whileFocus={{ scale: 1.02, boxShadow: '0 0 25px rgba(244,114,182,0.2)' }}
-                  />
+            {phases.map(
+              (phase, index) =>
+                currentPhase >= index && (
                   <motion.div
-                    className="absolute inset-0 -z-10 bg-gradient-to-r from-rose-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-xl transition-opacity opacity-0 group-hover:opacity-100"
-                    animate={{
-                      scale: [1, 1.1, 1],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </motion.div>
-                
-                <motion.button
-                  onClick={handlePasswordSubmit}
-                  className="relative px-10 py-4 bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 text-white rounded-full font-serif text-xl overflow-hidden shadow-lg hover:shadow-[0_0_30px_rgba(244,114,182,0.5)] backdrop-blur-lg"
-                  whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(244,114,182,0.4)' }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.span
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                    animate={{
-                      x: ["-200%", "200%"],
-                    }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                  />
-                  <span className="relative z-10 flex items-center gap-2">
-                    <span>Open My Heart</span>
-                    <span className="text-lg">💝</span>
-                  </span>
-                </motion.button>
-
-                {showPasswordError && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ type: 'spring', stiffness: 100 }}
-                    className="bg-pink-500/10 backdrop-blur-sm border border-pink-500/20 rounded-full px-6 py-3 shadow-lg"
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 1.5, ease: 'easeOut' }}
                   >
                     <motion.p
-                      animate={{
-                        color: ['rgb(244,114,182)', 'rgb(236,72,153)', 'rgb(244,114,182)'],
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="text-lg font-light flex items-center gap-2"
+                      className={`${
+                        isMobile ? 'text-lg' : 'text-2xl'
+                      } leading-relaxed font-serif ${phase.className}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 1.5, delay: 0.5 }}
                     >
-                      <span>Not quite the magic words... Try again with love</span>
-                      <motion.span
-                        animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      >
-                        💖
-                      </motion.span>
+                      {phase.text}
                     </motion.p>
                   </motion.div>
+                )
+            )}
+          </AnimatePresence>
+
+          {/* Password Input */}
+          {currentPhase >= 3 && !isPasswordCorrect && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1 }}
+              className="space-y-6"
+            >
+              <motion.h3
+                className={`${
+                  isMobile ? 'text-2xl' : 'text-3xl'
+                } font-serif italic text-amber-400`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                Enter the 4-digit Secret Code
+              </motion.h3>
+              <motion.div className="relative group w-72 mx-auto">
+                <motion.input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
+                  onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+                  placeholder="Enter the 4-digit code"
+                  aria-label="Enter the 4-digit secret code"
+                  className="w-full px-6 py-4 bg-black/50 text-white rounded-full border border-amber-500/30 focus:border-amber-500/80 focus:outline-none text-center text-xl backdrop-blur-md"
+                  whileFocus={{ scale: 1.02 }}
+                />
+                <motion.div
+                  className="absolute inset-0 -z-10 bg-gradient-to-r from-rose-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-xl transition-opacity opacity-0 group-hover:opacity-100"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </motion.div>
+              <motion.button
+                onClick={handlePasswordSubmit}
+                className="relative px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-700 text-white rounded-full font-medium text-lg shadow-lg hover:shadow-amber-500/20 transition-shadow"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label="Submit password"
+              >
+                <motion.span
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  animate={{ x: ['-200%', '200%'] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                />
+                <span className="relative z-10">Unlock</span>
+              </motion.button>
+              <AnimatePresence>
+                {showPasswordError && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-rose-400"
+                  >
+                    Incorrect code. Please try again.
+                  </motion.p>
                 )}
                 {showSuccess && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ type: 'spring', damping: 12 }}
-                    className="bg-gradient-to-r from-rose-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-md border border-pink-400/30 rounded-full px-8 py-4 shadow-[0_0_20px_rgba(244,114,182,0.3)]"
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-green-400"
                   >
-                    <motion.div className="flex flex-col items-center gap-4">
-                      <motion.p
-                        animate={{
-                          color: ['rgb(244,114,182)', 'rgb(236,72,153)', 'rgb(244,114,182)'],
-                        }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="text-xl font-light text-center"
-                      >
-                        <motion.span
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.3 }}
-                        >
-                          ✨ Magic words accepted! ✨
-                        </motion.span>
-                      </motion.p>
-                      <motion.div
-                        className="flex gap-2 text-2xl"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                      >
-                        {['💝', '✨', '💖', '✨', '💝'].map((emoji, index) => (
-                          <motion.span
-                            key={index}
-                            animate={{
-                              y: [0, -10, 0],
-                              rotate: [0, 10, -10, 0],
-                              scale: [1, 1.2, 1]
-                            }}
-                            transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              delay: index * 0.2
-                            }}
-                          >
-                            {emoji}
-                          </motion.span>
-                        ))}
-                      </motion.div>
-                    </motion.div>
-                  </motion.div>
+                    Unlocking our special moment...
+                  </motion.p>
                 )}
-              </div>
+              </AnimatePresence>
             </motion.div>
           )}
 
-          {currentPhase >= 3 && isPasswordCorrect && (
+          {/* Proposal Section */}
+          {isPasswordCorrect && (
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 80 }}
-              className="space-y-16 relative"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-12"
             >
-              <motion.div
+              <motion.h2
+                className={`${
+                  isMobile ? 'text-4xl' : 'text-6xl'
+                } font-bold text-amber-400 font-serif italic`}
                 animate={{
-                  rotateY: [0, 360],
+                  scale: [1, 1.05, 1],
+                  textShadow: [
+                    '0 0 20px rgba(251,191,36,0.2)',
+                    '0 0 40px rgba(251,191,36,0.4)',
+                    '0 0 20px rgba(251,191,36,0.2)',
+                  ],
                 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 4, repeat: Infinity }}
               >
-                <motion.h2
-                  animate={{
-                    scale: [1, 1.05, 1],
-                    filter: [
-                      'drop-shadow(0 0 30px rgba(251,191,36,0.2))',
-                      'drop-shadow(0 0 60px rgba(251,191,36,0.4))',
-                      'drop-shadow(0 0 30px rgba(251,191,36,0.2))'
-                    ]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className={`${isMobile ? 'text-4xl' : 'text-6xl md:text-7xl'} font-bold text-amber-500 my-16 font-serif italic`}
-                >
-                  Will you marry me?
-                </motion.h2>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex justify-center"
-              >
-                <button
+                Will you marry me?
+              </motion.h2>
+              {!showRing && (
+                <motion.button
                   onClick={() => setShowRing(true)}
-                  className={`group relative ${isMobile ? 'px-10 py-6 text-2xl' : 'px-20 py-8 text-3xl'} bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-black rounded-full font-serif overflow-hidden transition-all duration-500 hover:shadow-[0_0_50px_rgba(251,191,36,0.5)]`}
+                  className="px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-700 text-white rounded-full font-medium text-lg shadow-lg hover:shadow-amber-500/20 transition-shadow"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Accept proposal"
                 >
-                  <motion.span
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                    animate={{
-                      x: ["-200%", "200%"],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  />
-                  <span className="relative z-10 flex items-center gap-4 group-hover:scale-110 transition-transform duration-500">
+                  <span className="flex items-center gap-2">
                     Yes, Forever
                     <motion.span
-                      animate={{ 
-                        rotate: 360,
-                        scale: [1, 1.2, 1],
-                      }}
+                      animate={{ rotate: 360, scale: [1, 1.2, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
                       💍
                     </motion.span>
                   </span>
-                </button>
-              </motion.div>
+                </motion.button>
+              )}
             </motion.div>
           )}
 
-          {showRing && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="fixed inset-0 bg-black/70 backdrop-blur-xl flex items-center justify-center z-50"
-              onClick={() => isMobile && setShowRing(false)} // Allow closing on mobile with tap
-            >
+          {/* Proposal Modal */}
+          <AnimatePresence>
+            {showRing && (
               <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", damping: 12 }}
-                className={`bg-gradient-to-br from-slate-900 to-purple-900 ${isMobile ? 'p-8' : 'p-16'} rounded-[2rem] text-center max-w-3xl mx-4 shadow-[0_0_100px_rgba(251,191,36,0.3)] border border-amber-500/30 relative overflow-hidden`}
-                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the modal itself
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/70 backdrop-blur-xl flex items-center justify-center z-50"
+                onClick={() => isMobile && setShowRing(false)}
               >
                 <motion.div
-                  className="absolute inset-0 opacity-30"
-                  animate={{
-                    background: [
-                      'radial-gradient(circle at 0% 0%, rgba(251,191,36,0.3) 0%, transparent 50%)',
-                      'radial-gradient(circle at 100% 100%, rgba(251,191,36,0.3) 0%, transparent 50%)',
-                      'radial-gradient(circle at 50% 50%, rgba(251,191,36,0.3) 0%, transparent 50%)'
-                    ]
-                  }}
-                  transition={{ duration: 5, repeat: Infinity }}
-                />
-
-                <div className="relative z-10 space-y-8">
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', damping: 12 }}
+                  className={`bg-gradient-to-br from-slate-900 to-purple-900 ${
+                    isMobile ? 'p-8' : 'p-16'
+                  } rounded-3xl text-center max-w-3xl mx-4 shadow-lg border border-amber-500/30 relative overflow-hidden`}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.5, type: "spring" }}
-                    className="flex justify-center"
-                  >
+                    className="absolute inset-0 opacity-30"
+                    animate={{
+                      background: [
+                        'radial-gradient(circle at 0% 0%, rgba(251,191,36,0.3) 0%, transparent 50%)',
+                        'radial-gradient(circle at 100% 100%, rgba(251,191,36,0.3) 0%, transparent 50%)',
+                        'radial-gradient(circle at 50% 50%, rgba(251,191,36,0.3) 0%, transparent 50%)',
+                      ],
+                    }}
+                    transition={{ duration: 5, repeat: Infinity }}
+                  />
+                  <div className="relative z-10 space-y-8">
                     <motion.div
-                      animate={{ 
-                        rotate: [0, 10, -10, 0],
-                        scale: [1, 1.2, 1.2, 1]
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
                       className="text-6xl"
-                    >
-                      💝
-                    </motion.div>
-                  </motion.div>
-
-                  <motion.h3
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.8 }}
-                    className={`${isMobile ? 'text-3xl' : 'text-4xl'} font-bold text-amber-500 font-serif italic`}
-                  >
-                    <motion.span
-                      animate={{
-                        textShadow: [
-                          '0 0 20px rgba(251,191,36,0.2)',
-                          '0 0 40px rgba(251,191,36,0.4)',
-                          '0 0 20px rgba(251,191,36,0.2)'
-                        ]
-                      }}
+                      animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      Thank you for saying yes!
-                    </motion.span>
-                  </motion.h3>
-
-                  {/* I Love You text that appears after kiss sound */}
-                  <motion.div 
-                    className="love-text-container mt-4"
-                    initial={{ opacity: 0 }}
-                    style={{ opacity: 0 }} /* Initial hidden state controlled by JS */
-                  >
-                    <motion.p
-                      animate={{
-                        scale: [1, 1.1, 1],
-                        color: ['rgb(251,191,36)', 'rgb(244,114,182)', 'rgb(251,191,36)']
-                      }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                      className="text-2xl font-bold font-serif italic"
+                      💍
+                    </motion.div>
+                    <motion.h3
+                      className={`${
+                        isMobile ? 'text-3xl' : 'text-4xl'
+                      } font-bold text-amber-500 font-serif italic`}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.8 }}
                     >
-                      I love you! 💋
-                    </motion.p>
-                  </motion.div>
-
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.2 }}
-                    className="flex justify-center gap-4"
-                  >
-                    {['✨', '💫', '💖', '✨'].map((emoji, i) => (
-                      <motion.span
-                        key={i}
-                        animate={{
-                          y: [0, -10, 0],
-                          rotate: [0, 360, 0],
-                          scale: [1, 1.2, 1]
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          delay: i * 0.2
-                        }}
-                        className="text-3xl"
-                      >
-                        {emoji}
-                      </motion.span>
-                    ))}
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 1.5 }}
-                    className="space-y-6"
-                  >
-                    <p className={`${isMobile ? 'text-xl' : 'text-2xl'} text-amber-300 font-serif leading-relaxed`}>
-                      Our beautiful journey of seven years has led to this magical moment.
-                      Every laugh, every tear, every shared dream has brought us here.
-                    </p>
-                    
+                      Thank you for saying yes!
+                    </motion.h3>
                     <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 2 }}
-                      className="flex flex-col items-center gap-4 mt-8"
+                      className="love-text-container"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 4.5 }}
+                    >
+                      <motion.p
+                        className="text-2xl font-bold font-serif italic text-amber-300"
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
+                        I love you! 💋
+                      </motion.p>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.2 }}
+                      className="flex justify-center gap-4"
+                    >
+                      {['✨', '💫', '💖', '✨'].map((emoji, i) => (
+                        <motion.span
+                          key={i}
+                          animate={{
+                            y: [0, -10, 0],
+                            rotate: [0, 360, 0],
+                            scale: [1, 1.2, 1],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            delay: i * 0.2,
+                          }}
+                          className="text-3xl"
+                        >
+                          {emoji}
+                        </motion.span>
+                      ))}
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.5 }}
+                      className="space-y-6 text-amber-300 font-serif leading-relaxed"
+                    >
+                      <p className={isMobile ? 'text-xl' : 'text-2xl'}>
+                        I am dying to meet you and this long distance has hit me hard.
+                      </p>
+                      <p className={isMobile ? 'text-xl' : 'text-2xl'}>
+                        Although I may have upset you at times, I am always here for you and I am coming soon. I hope to be with you forever.
+                      </p>
+                      <p className={isMobile ? 'text-xl' : 'text-2xl'}>
+                        Thank you for every time I was mentally broken, emotionally unstable, and you were there. Even when I wasn't giving time and effort, you still gave me your love and care.
+                      </p>
+                      <p className={isMobile ? 'text-xl' : 'text-2xl'}>
+                        I'm full of both helplessness and hopefulness. You are my source of motivation, the only one for me.
+                      </p>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 3 }}
+                      className="space-y-4"
                     >
                       <motion.div
-                        animate={{
-                          scale: [1, 1.1, 1],
-                          rotate: [0, 5, -5, 0]
-                        }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                        className="text-xl text-amber-200 font-serif italic"
+                        className="flex justify-center space-x-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 2.5 }}
                       >
-                        Together forever, writing our love story...
+                        {[...Array(7)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            animate={{
+                              scale: [1, 1.2, 1],
+                              rotate: [0, 360],
+                              opacity: [0.5, 1, 0.5],
+                            }}
+                            transition={{
+                              duration: 4,
+                              repeat: Infinity,
+                              delay: i * 0.3,
+                            }}
+                            className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold"
+                          >
+                            {i + 1}
+                          </motion.div>
+                        ))}
                       </motion.div>
-
-                      {!isMobile && (
-                        <motion.div 
-                          className="flex gap-2 items-center justify-center flex-wrap"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 2.5 }}
-                        >
-                          {Array.from({ length: 7 }).map((_, i) => (
-                            <motion.div
-                              key={i}
-                              animate={{
-                                scale: [1, 1.2, 1],
-                                rotate: [0, 360],
-                                opacity: [0.5, 1, 0.5]
-                              }}
-                              transition={{
-                                duration: 4,
-                                repeat: Infinity,
-                                delay: i * 0.3
-                              }}
-                              className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold"
-                            >
-                              {i + 1}
-                            </motion.div>
-                          ))}
-                        </motion.div>
-                      )}
-
                       <motion.p
+                        className="text-amber-300/80 italic"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 3 }}
-                        className="text-amber-300/80 italic mt-2"
                       >
                         Seven beautiful years and countless more to come...
                       </motion.p>
                     </motion.div>
-                  </motion.div>
-                </div>
+                  </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
     </div>
