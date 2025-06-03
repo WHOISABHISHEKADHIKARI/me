@@ -132,12 +132,13 @@ const Home = () => {
 
           <motion.h1
             variants={itemVariants}
-            className="relative text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 pb-1"
+            className="relative text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-4 bg-clip-text text-transparent pb-1"
           >
             Namaste, I'm{" "}
-            <span className="relative inline-block">
+            <span className="relative inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-green-300 via-emerald-400 to-yellow-300 drop-shadow-[0_8px_32px_rgba(16,185,129,0.7)]">
               Abhishek Adhikari
-              <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-accent/50 rounded-full" />
+              <div className="absolute -bottom-1 left-0 right-0 h-1.5 bg-gradient-to-r from-primary/70 via-secondary/70 to-accent/70 rounded-full" />
+              <div className="absolute -inset-1 blur-xl bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 opacity-70 rounded-full -z-10" />
             </span>
           </motion.h1>
           <motion.h2
@@ -210,8 +211,15 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer group"
-            onClick={() => window.scrollTo({ top: window.innerHeight * 0.85, behavior: 'smooth' })}
+            className="fixed bottom-8 inset-x-0 mx-auto w-max flex flex-col items-center gap-2 cursor-pointer group z-20"
+            onClick={() => {
+              const skillsSection = document.querySelector('section.py-20.md\\:py-28');
+              if (skillsSection) {
+                skillsSection.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+              }
+            }}
             title="Scroll down"
           >
             <span className="text-sm text-muted-foreground/70">Scroll to explore</span>

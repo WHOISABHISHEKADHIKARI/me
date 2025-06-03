@@ -1,33 +1,10 @@
 import { motion } from 'framer-motion';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon, PaperAirplaneIcon, UserIcon, ChatBubbleLeftEllipsisIcon, LinkIcon } from '@heroicons/react/24/outline';
-import { useState } from 'react';
+import { useForm, ValidationError } from '@formspree/react';
 import { Helmet } from 'react-helmet-async';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-      alert('Please fill in all fields.');
-      return;
-    }
-    const mailtoLink = `mailto:abhishekadhikari1254@gmail.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`)}`;
-    window.location.href = mailtoLink;
-  };
+  const [state, handleSubmit] = useForm("xjkrvjlg");
 
   const contactInfo = [
     {
@@ -133,68 +110,99 @@ const Contact = () => {
               <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6">
                 Send Me a Message
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
-                    placeholder="Your Name"
-                  />
-                </div>
-                <div className="relative">
-                  <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
-                    placeholder="Your Email"
-                  />
-                </div>
-                <div className="relative">
-                  <ChatBubbleLeftEllipsisIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
-                    placeholder="Subject"
-                  />
-                </div>
-                <div className="relative">
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full pl-3 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 resize-none"
-                    placeholder="Your Message..."
-                  ></textarea>
-                </div>
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: 1.03, boxShadow: "0px 4px 12px rgba(var(--color-primary-rgb), 0.25)" }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-md"
+              {state.succeeded ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center shadow-lg"
                 >
-                  <PaperAirplaneIcon className="h-5 w-5 mr-2 -rotate-12" />
-                  Send Message
-                </motion.button>
-              </form>
+                  <div className="flex items-center justify-center mb-4">
+                    <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-green-800 dark:text-green-200 mb-2">Message Sent Successfully!</h3>
+                  <p className="text-green-700 dark:text-green-300">Thank you for reaching out. I'll get back to you as soon as possible.</p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="relative">
+                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                      placeholder="Your Name"
+                    />
+                    <ValidationError prefix="Name" field="name" errors={state.errors} />
+                  </div>
+                  <div className="relative">
+                    <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                      placeholder="Your Email"
+                    />
+                    <ValidationError prefix="Email" field="email" errors={state.errors} />
+                  </div>
+                  <div className="relative">
+                    <ChatBubbleLeftEllipsisIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      required
+                      className="w-full pl-10 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                      placeholder="Subject"
+                    />
+                    <ValidationError prefix="Subject" field="subject" errors={state.errors} />
+                  </div>
+                  <div className="relative">
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
+                      required
+                      className="w-full pl-3 pr-3 py-2.5 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 resize-none"
+                      placeholder="Your Message..."
+                    ></textarea>
+                    <ValidationError prefix="Message" field="message" errors={state.errors} />
+                  {state.errors && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 mt-4"
+                    >
+                      <div className="flex items-center">
+                        <svg className="w-5 h-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-red-700 dark:text-red-300 text-sm">
+                          {state.errors.map(error => error.message).join('. ')}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                  </div>
+                  <motion.button
+                    type="submit"
+                    disabled={state.submitting}
+                    whileHover={{ scale: 1.03, boxShadow: "0px 4px 12px rgba(var(--color-primary-rgb), 0.25)" }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <PaperAirplaneIcon className="h-5 w-5 mr-2 -rotate-12" />
+                    {state.submitting ? 'Sending...' : 'Send Message'}
+                  </motion.button>
+                </form>
+              )}
             </motion.div>
 
             {/* Contact Info & Socials */}            

@@ -80,7 +80,7 @@ const Home = () => {
   return (
     <div className="min-h-screen pt-20">
       <Breadcrumbs />
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20" aria-label="Introduction">
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-24 bg-gradient-to-br from-blue-900 via-background to-green-900" aria-label="Introduction">
         {/* Enhanced background effects */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-sm" />
         <div
@@ -97,12 +97,12 @@ const Home = () => {
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
 
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10"
-        >
-          <motion.div variants={itemVariants} className="mb-10 space-y-4">
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="max-w-4xl mx-auto px-6 sm:px-10 lg:px-16 text-center relative z-10"
+          >
+          <motion.div variants={itemVariants} className="mb-14 space-y-6">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -132,61 +132,256 @@ const Home = () => {
             </motion.div>
           </motion.div>
 
+          {/* Hidden SEO title */}
           <h1 className="sr-only">Abhishek Adhikari - UI/UX Designer & Agri-Tech Specialist</h1>
-          <motion.h2
-            variants={itemVariants}
-            className="relative text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 pb-1"
+          
+          {/* Hero Title */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, type: "spring" }}
+            className="flex flex-col items-center gap-3 mb-10 mt-8"
           >
-            Namaste, I'm{" "}
-            <motion.span 
-              className="relative inline-block"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              Abhishek Adhikari
-              <motion.div 
-                className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-accent/50 rounded-full"
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              />
+            <span className="block text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground/80 mb-1">Namaste, I'm</span>
+            <span className="relative block text-7xl sm:text-8xl md:text-9xl font-extrabold bg-gradient-to-br from-blue-500 via-green-300 via-emerald-400 to-yellow-300 bg-clip-text text-transparent drop-shadow-[0_8px_32px_rgba(16,185,129,0.7)] mb-2 animate-glow">
+              <span className="absolute -inset-3 rounded-3xl blur-3xl opacity-70 bg-gradient-to-br from-blue-400 via-green-400 to-yellow-300 z-0 animate-pulse"></span>
+              <span className="relative z-10">Abhishek Adhikari</span>
+            </span>
+            <span className="block text-xl sm:text-2xl md:text-3xl font-semibold text-foreground/90 mb-1">UI/UX Expert & Agri-Tech Innovator</span>
+            <span className="block text-base sm:text-lg text-muted-foreground/80 max-w-2xl mx-auto">Crafting intuitive digital experiences that bridge technology and agriculture.</span>
+            <span className="inline-block px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 via-green-400 to-teal-400 text-white text-xs font-semibold tracking-widest shadow-lg mt-4 animate-pulse">Transforming Ideas into Reality</span>
+          </motion.div>
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col items-center justify-center"
+          >
+            <div className="flex items-center">
               <motion.div
-                className="absolute -inset-x-4 -inset-y-2 bg-primary/10 rounded-lg z-[-1]"
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="overflow-hidden relative"
+              >
+                <motion.span 
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold relative z-10 bg-gradient-to-br from-blue-400 to-indigo-600 bg-clip-text text-transparent"
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.3 }
+                  }}
+                >
+                  Namaste,
+                </motion.span>
+                <motion.div
+                  className="absolute -inset-1 bg-gradient-to-r from-blue-400/10 to-indigo-600/10 rounded-lg blur-sm z-0"
+                  animate={{ opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                className="overflow-hidden ml-3 relative"
+              >
+                <motion.span 
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold relative z-10 bg-gradient-to-br from-indigo-500 to-purple-600 bg-clip-text text-transparent"
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.3 }
+                  }}
+                >
+                  I'm
+                </motion.span>
+                <motion.div
+                  className="absolute -inset-1 bg-gradient-to-r from-indigo-500/10 to-purple-600/10 rounded-lg blur-sm z-0"
+                  animate={{ opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </motion.div>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+              className="overflow-hidden relative mt-1"
+            >
+              <motion.div className="relative">
+                <motion.div
+                  className="absolute -inset-x-4 -inset-y-2 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-xl blur-md z-0"
+                  animate={{
+                    opacity: [0.6, 0.9, 0.6],
+                    scale: [1, 1.03, 1]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <motion.div className="relative inline-block">
+                  <motion.div 
+                    className="absolute -inset-x-2 -inset-y-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-lg blur-md z-0"
+                    animate={{
+                      opacity: [0.4, 0.7, 0.4],
+                      scale: [0.98, 1.02, 0.98],
+                    }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                  <motion.span
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-gradient relative z-10 inline-block"
+                    style={{ backgroundSize: '200% auto' }}
+                    whileHover={{
+                      scale: 1.03,
+                      textShadow: [
+                        "0 0 8px rgba(var(--primary-rgb), 0.6)",
+                        "0 0 16px rgba(var(--secondary-rgb), 0.6)",
+                        "0 0 8px rgba(var(--accent-rgb), 0.6)",
+                      ],
+                      transition: { duration: 1, repeat: Infinity },
+                    }}
+                  >
+                    <motion.span 
+                      className="inline-block"
+                      animate={{ scale: [1, 1.02, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      A
+                    </motion.span>
+                    <motion.span className="inline-block">bhishek </motion.span>
+                    <motion.span 
+                      className="inline-block"
+                      animate={{ scale: [1, 1.02, 1] }}
+                      transition={{ duration: 2, delay: 0.5, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      A
+                    </motion.span>
+                    <motion.span className="inline-block">dhikari</motion.span>
+                  </motion.span>
+                </motion.div>
+              </motion.div>
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-secondary to-accent"
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                transition={{ duration: 1.2, delay: 0.8 }}
               />
-            </motion.span>
-          </motion.h2>
+              <motion.div 
+                className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-lg"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.2 }}
+              >
+                ✨
+              </motion.div>
+            </motion.div>
+          </motion.div>
           <motion.h3
             variants={itemVariants}
-            className="text-xl sm:text-2xl lg:text-3xl font-medium text-muted-foreground/90 mb-6 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl sm:text-2xl lg:text-3xl font-medium mb-6 max-w-3xl mx-auto leading-relaxed overflow-hidden"
           >
-            <span className="text-foreground/95">UI/UX Expert & Agri-Tech Innovator</span>{" "}
-            <span className="text-muted-foreground/75">crafting intuitive digital experiences that bridge technology and agriculture</span>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+              className="relative inline-block"
+            >
+              <motion.span 
+                className="bg-gradient-to-r from-primary/90 via-secondary/90 to-accent/90 bg-clip-text text-transparent"
+                whileHover={{
+                  backgroundImage: ["linear-gradient(to right, var(--primary), var(--secondary), var(--accent))", "linear-gradient(to left, var(--primary), var(--secondary), var(--accent))"],
+                }}
+                transition={{ duration: 1 }}
+              >
+                UI/UX Expert & Agri-Tech Innovator
+              </motion.span>
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1.2, delay: 1.6 }}
+              />
+            </motion.div>{" "}
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.8 }}
+              className="text-muted-foreground/90 relative inline-block"
+            >
+              crafting intuitive digital experiences that bridge technology and agriculture
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1.2, delay: 2 }}
+              />
+            </motion.span>
           </motion.h3>
 
           <motion.div variants={itemVariants} className="mb-10">
-            <div className="text-xl md:text-2xl lg:text-3xl font-medium h-16 flex items-center justify-center">
+            <div className="text-xl md:text-2xl lg:text-3xl font-medium h-16 flex items-center justify-center relative">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.7, ease: "easeOut" }}
-                className="text-gradient-primary animate-gradient"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 2.2, duration: 0.8, ease: "easeOut" }}
+                className="relative px-8 py-3"
               >
+                <motion.div
+                  className="absolute -inset-x-6 -inset-y-4 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 rounded-xl blur-xl"
+                  animate={{
+                    opacity: [0.5, 0.8, 0.5],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <motion.div 
+                  className="absolute -inset-0 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl opacity-30"
+                  style={{ backdropFilter: "blur(4px)" }}
+                />
+                <motion.div
+                  className="absolute -right-3 -top-3 w-6 h-6 text-lg"
+                  animate={{
+                    rotate: [0, 360],
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                >
+                  ✨
+                </motion.div>
+                <motion.div
+                  className="absolute -left-3 -bottom-3 w-6 h-6 text-lg"
+                  animate={{
+                    rotate: [360, 0],
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                >
+                  🌱
+                </motion.div>
                 <TypeAnimation
                   sequence={[
-                    'Bridging Digital Design & Agriculture',
+                    'Bridging Digital Design & Agriculture ✨',
                     2000,
-                    'Creating Sustainable Tech Solutions',
+                    'Creating Sustainable Tech Solutions 🌱',
                     2000,
-                    'Transforming Ideas into Reality',
+                    'Transforming Ideas into Reality 💫',
                     2000,
-                    'Pioneering Agri-Tech Innovation',
+                    'Pioneering Agri-Tech Innovation 🚀',
                     2000,
-                    'Crafting Intuitive User Experiences',
+                    'Crafting Intuitive User Experiences 🎨',
                     2000,
-                    'Building Digital Farm Solutions',
+                    'Building Digital Farm Solutions 🌿',
                     2000,
                   ]}
                   wrapper="span"
@@ -195,57 +390,175 @@ const Home = () => {
                   className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-gradient"
                   style={{ backgroundSize: '200% auto' }}
                 />
+                <motion.div
+                  className="absolute inset-0 border border-primary/10 rounded-xl"
+                  animate={{
+                    borderColor: ['rgba(var(--primary-rgb), 0.1)', 'rgba(var(--secondary-rgb), 0.1)', 'rgba(var(--accent-rgb), 0.1)'],
+                    boxShadow: [
+                      '0 0 0px rgba(var(--primary-rgb), 0)',
+                      '0 0 8px rgba(var(--secondary-rgb), 0.2)',
+                      '0 0 0px rgba(var(--accent-rgb), 0)'
+                    ]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
               </motion.div>
             </div>
           </motion.div>
 
-          <motion.div 
-            variants={itemVariants} 
-            className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-20"
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-wrap items-center justify-center gap-6 mt-10"
           >
-            <motion.div whileHover={{ scale: 1.03, y: -2 }} transition={{ type: "spring", stiffness: 400, damping: 15 }}>
-              <Link 
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              className="relative group"
+            >
+              <motion.div 
+                className="absolute -inset-1 rounded-lg bg-gradient-to-r from-primary via-secondary to-accent opacity-70 blur-sm group-hover:opacity-100 transition duration-200"
+                animate={{
+                  backgroundPosition: ["0% 0%", "100% 100%"],
+                }}
+                transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+              />
+              <Link
                 to="/projects"
-                className="btn bg-primary text-primary-foreground hover:bg-primary/90 text-base shadow-md hover:shadow-lg transition-all duration-300 group"
+                className="btn bg-background hover:bg-background/90 border-none relative rounded-md px-6 py-3 font-medium text-foreground flex items-center gap-2 z-10"
               >
-                View My Work 
-                <RocketLaunchIcon className="inline-block h-4 w-4 ml-2 opacity-80 group-hover:opacity-100 transition-opacity" />
+                <motion.span
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 2.6, duration: 0.5 }}
+                >
+                  View My Work
+                </motion.span>
+                <motion.span 
+                  className="text-lg"
+                  initial={{ opacity: 0, rotate: -30, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  transition={{ delay: 2.8, duration: 0.5, type: "spring" }}
+                >
+                  👨‍💻
+                </motion.span>
+                <motion.div
+                  className="absolute inset-0 rounded-md border border-primary/20 z-0"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 2.6, duration: 0.5 }}
+                />
               </Link>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.03, y: -2 }} transition={{ type: "spring", stiffness: 400, damping: 15 }}>
-              <Link 
+            
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              className="relative group"
+            >
+              <motion.div 
+                className="absolute -inset-1 rounded-lg bg-gradient-to-r from-accent/40 via-secondary/40 to-primary/40 opacity-50 blur-sm group-hover:opacity-80 transition duration-200"
+                animate={{
+                  backgroundPosition: ["100% 100%", "0% 0%"],
+                }}
+                transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+              />
+              <Link
                 to="/contact"
-                className="btn bg-card text-card-foreground hover:bg-muted/80 border border-border text-base shadow-sm hover:shadow-md transition-all duration-300 group"
+                className="btn bg-background hover:bg-background/90 border-none relative rounded-md px-6 py-3 font-medium text-foreground flex items-center gap-2 z-10"
               >
-                Get In Touch
-                <PencilIcon className="inline-block h-4 w-4 ml-2 opacity-80 group-hover:opacity-100 transition-opacity" />
+                <motion.span
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 2.8, duration: 0.5 }}
+                >
+                  Get In Touch
+                </motion.span>
+                <motion.span 
+                  className="text-lg"
+                  initial={{ opacity: 0, rotate: 30, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  transition={{ delay: 3.0, duration: 0.5, type: "spring" }}
+                >
+                  ✉️
+                </motion.span>
+                <motion.div
+                  className="absolute inset-0 rounded-md border border-accent/20 z-0"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 2.8, duration: 0.5 }}
+                />
               </Link>
             </motion.div>
           </motion.div>
 
           {/* Scroll Indicator */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.6 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer group"
-            onClick={() => window.scrollTo({ top: window.innerHeight * 0.85, behavior: 'smooth' })}
-            title="Scroll down"
+            variants={itemVariants}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center text-muted-foreground/70 text-sm"
           >
-            <span className="text-sm text-muted-foreground/70">Scroll to explore</span>
-            <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/20 flex items-start justify-center p-1.5">
+            <motion.span 
+              className="mb-2 relative"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 3.2, duration: 0.8 }}
+            >
+              <motion.span
+                className="relative z-10"
+                animate={{ 
+                  color: ["rgba(var(--muted-foreground-rgb), 0.7)", "rgba(var(--primary-rgb), 0.8)", "rgba(var(--muted-foreground-rgb), 0.7)"] 
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                Scroll to explore
+              </motion.span>
               <motion.div
-                className="w-1.5 h-2.5 rounded-full bg-muted-foreground/50"
+                className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: [0, 1, 0] }}
+                transition={{ 
+                  scaleX: { duration: 1.5, delay: 3.4 },
+                  opacity: { duration: 2, repeat: Infinity, repeatDelay: 1 }
+                }}
+              />
+            </motion.span>
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 3.4, duration: 0.8 }}
+            >
+              <motion.div
+                className="absolute -inset-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 blur-sm"
                 animate={{
-                  y: [0, 12, 0],
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 0.8, 0.5]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "loop",
+                }}
+              />
+              <motion.div
+                animate={{
+                  y: [0, 8, 0],
                 }}
                 transition={{
                   duration: 1.5,
                   repeat: Infinity,
-                  ease: "easeInOut",
+                  repeatType: "loop",
                 }}
-              />
-            </div>
+                className="relative z-10"
+              >
+                <ArrowDownIcon className="h-5 w-5" />
+              </motion.div>
+            </motion.div>
           </motion.div>
         </motion.div>
       </section>
