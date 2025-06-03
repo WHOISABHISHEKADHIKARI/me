@@ -43,7 +43,7 @@ const Contact = () => {
     },
     {
       name: 'GitHub',
-      href: 'https://github.com/AbhishekAdhikari11',
+      href: 'https://github.com/Abhishekdank1254',
       icon: (
         <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -53,20 +53,10 @@ const Contact = () => {
     },
     {
       name: 'Facebook',
-      href: 'https://www.facebook.com/abhishek.adhikari.5811',
+      href: 'https://www.facebook.com/adheekariabhishek',
       icon: (
         <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-        </svg>
-      ),
-      color: 'hover:text-primary transition-colors duration-200'
-    },
-    {
-      name: 'Dribbble',
-      href: '#', // Replace with your Dribbble link if available
-      icon: (
-        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path fillRule="evenodd" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.661 16.117c-.33.134-.669.201-1.01.201-1.199 0-2.036-.648-2.313-1.627-.035-.12-.06-.233-.077-.341-.307-1.298.1-2.737.988-4.012.23-.328.47-.648.71-.96-.397-.04-.795-.06-1.192-.06-2.399 0-4.353 1.104-5.404 3.004-.268.49-.448.98-.545 1.462-.117.56-.126 1.128-.03 1.688.288 1.668 1.503 3.005 3.29 3.46.24.06.48.09.72.09.99 0 1.95-.33 2.73-.93.78-.6 1.26-1.47 1.32-2.46.008-.13.016-.26.016-.39-.01-.21-.03-.42-.06-.63zm-3.66-5.01c.03.06.04.12.04.18 0 .78-.33 1.47-.87 1.95-.54.48-1.26.75-2.04.75-.93 0-1.74-.39-2.25-.99-.51-.6-.75-1.41-.75-2.34 0-.96.3-1.8.81-2.49.51-.69 1.23-1.14 2.07-1.14.96 0 1.77.42 2.28 1.05.51.63.75 1.41.75 2.28 0 .09-.01.18-.03.27z" clipRule="evenodd" />
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385h-3.047v-3.47h3.047v-2.642c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385c5.738-.9 10.126-5.864 10.126-11.854z" />
         </svg>
       ),
       color: 'hover:text-primary transition-colors duration-200'
@@ -292,16 +282,93 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* FAQ Section - Optional, can be removed if not desired for minimal look */}
-      {/* Simplified or removed FAQ for minimalism, or restyle if kept */}
-      {/* Example of a more minimal FAQ item if kept:
-      <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
-        <h3 className="text-lg font-semibold text-foreground mb-2">What's your typical response time?</h3>
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          I usually respond to emails within 24 hours during weekdays. For urgent matters, please mention it in the subject.
-        </p>
-      </div>
-      */}
+      {/* FAQ Section */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4 md:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Here are some common questions about our services in Manahari.</p>
+          </motion.div>
+
+          <div className="max-w-3xl mx-auto space-y-6">
+            {/* FAQ Item 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="bg-card border border-border rounded-xl p-6 shadow-lg"
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-2">What agricultural services do you offer in Manahari?</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                We provide a comprehensive range of agricultural services in Manahari including organic farming consultation, sustainable crop management, agricultural technology implementation, soil testing, and farm-to-market solutions tailored to the local climate and soil conditions.
+              </p>
+            </motion.div>
+
+            {/* FAQ Item 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="bg-card border border-border rounded-xl p-6 shadow-lg"
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-2">How can I schedule a consultation for my farm in Manahari?</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Scheduling a consultation is easy! You can contact us directly through the form on this page, call our Manahari office at +977 9855035482, or send an email with details about your farm and requirements. We typically respond within 24-48 hours to arrange an on-site visit.
+              </p>
+            </motion.div>
+
+            {/* FAQ Item 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="bg-card border border-border rounded-xl p-6 shadow-lg"
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-2">What crops are best suited for the Manahari region?</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Manahari's climate and soil conditions are ideal for various crops including rice, maize, wheat, vegetables, and certain fruits. We can help you determine the most profitable and sustainable crops for your specific location within the Manahari area based on soil analysis and local market demand.
+              </p>
+            </motion.div>
+
+            {/* FAQ Item 4 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="bg-card border border-border rounded-xl p-6 shadow-lg"
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-2">Do you offer agricultural technology training for farmers in Manahari?</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Yes, we provide comprehensive agricultural technology training programs specifically designed for Manahari farmers. Our workshops cover modern farming techniques, efficient irrigation systems, appropriate technology adoption, and sustainable practices that increase yield while preserving the local ecosystem.
+              </p>
+            </motion.div>
+
+            {/* FAQ Item 5 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              viewport={{ once: true }}
+              className="bg-card border border-border rounded-xl p-6 shadow-lg"
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-2">What support do you provide for organic certification in Manahari?</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                We offer end-to-end support for organic certification in Manahari, including guidance on transitioning to organic practices, documentation preparation, compliance with certification standards, and connecting with appropriate certification bodies. Our team has successfully helped numerous Manahari farmers achieve organic certification.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
     </div>
     </>
   );
