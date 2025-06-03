@@ -1,14 +1,11 @@
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
-const LuxuryParticle = ({ delay }) => {
-  const randomPath = Array.from({ length: 7 }, () => ({
-    x: Math.random() * 800 - 400,
-    y: Math.random() * -600
+const LuxuryParticle = ({ delay, isMobile }) => {
+  const randomPath = Array.from({ length: isMobile ? 3 : 5 }, () => ({
+    x: Math.random() * 600 - 300,
+    y: Math.random() * -400
   }));
-
-  const particles = ['🌹', '💝', '✨', '💫', '🌟', '⭐️', '💎', '🦋', '🕊️'];
-  const randomParticle = particles[Math.floor(Math.random() * particles.length)];
 
   return (
     <motion.div
@@ -16,27 +13,23 @@ const LuxuryParticle = ({ delay }) => {
       animate={{
         y: '-10vh',
         x: randomPath.map(p => p.x),
-        scale: [0, 1.2, 0.8, 1.1, 0],
-        opacity: [0, 1, 0.8, 1, 0],
-        rotate: [0, 180, 270, 360],
+        scale: [0, 1, 0.8, 0],
+        opacity: [0, 0.8, 0.2, 0],
       }}
       transition={{
-        duration: 10 + Math.random() * 5,
-        times: [0, 0.25, 0.5, 0.75, 1],
-        repeat: Infinity,
-        delay: delay + Math.random() * 3,
-        ease: 'easeInOut'
+        duration: isMobile ? 15 : 20,
+        delay: delay,
+        ease: 'linear',
+        times: [0, 0.2, 0.8, 1],
       }}
-      className="absolute text-4xl md:text-5xl pointer-events-none mix-blend-screen filter drop-shadow-lg"
-    >
-      {randomParticle}
-    </motion.div>
+      className={`absolute w-${isMobile ? '1' : '2'} h-${isMobile ? '1' : '2'} rounded-full bg-amber-400/30 shadow-lg shadow-amber-400/20`}
+    />
   );
 };
 
 const GlowingText = ({ children, color = "amber" }) => {
-  const controls = useAnimation();
   const [isHovered, setIsHovered] = useState(false);
+  const controls = useAnimation();
 
   useEffect(() => {
     controls.start({
@@ -48,7 +41,7 @@ const GlowingText = ({ children, color = "amber" }) => {
         '0 0 60px rgba(251,191,36,0.3)'
       ],
     });
-  }, [isHovered]);
+  }, [isHovered, controls]);
 
   return (
     <motion.span
@@ -62,8 +55,7 @@ const GlowingText = ({ children, color = "amber" }) => {
       }}
       className={`text-${color}-600 font-serif italic cursor-pointer select-none hover:text-${color}-400 transition-colors duration-300`}
       whileHover={{
-        y: -2,
-        filter: 'brightness(1.2)'
+        scale: 1.1,
       }}
     >
       {children}
@@ -79,44 +71,96 @@ const Sabhi = () => {
   const [password, setPassword] = useState('');
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
   const [showPasswordError, setShowPasswordError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
 
   const correctPassword = '1254'; // You can change this to any password you want
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handlePasswordSubmit = () => {
     if (password === correctPassword) {
       setIsPasswordCorrect(true);
       setShowPasswordError(false);
+      setShowSuccess(true);
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
     } else {
       setShowPasswordError(true);
       setPassword('');
+      
+      // Hide error message after 3 seconds
+      setTimeout(() => {
+        setShowPasswordError(false);
+      }, 3000);
     }
   };
 
+  // Increment phases with delay
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentPhase(prev => (prev < 3 ? prev + 1 : prev));
-    }, 4000);
-    return () => clearInterval(timer);
+    const timer = setTimeout(() => {
+      if (currentPhase < phases.length - 1) {
+        setCurrentPhase(prev => prev + 1);
+      }
+    }, 6000);
+
+    return () => clearTimeout(timer);
+  }, [currentPhase]);
+
+  // Show particles with delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowParticles(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
+  // Play sound when ring is shown
   useEffect(() => {
-    if (showRing) {
+    if (showRing && !isMobile) {
       setShowParticles(true);
-      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2/2.wav');
-      audio.play();
+      try {
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2/2.wav');
+        audio.volume = 0.5; // Lower volume
+        const playPromise = audio.play();
+        
+        // Handle play promise to avoid uncaught errors
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Audio play failed:", error);
+          });
+        }
+      } catch (error) {
+        console.log("Audio error:", error);
+      }
     }
-  }, [showRing]);
+  }, [showRing, isMobile]);
 
-  const handleMouseMove = (e) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setMousePosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      });
-    }
-  };
+  // Debounce mouse move handler for better performance
+  const handleMouseMove = useCallback((e) => {
+    if (!containerRef.current || isMobile) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  }, [isMobile]);
 
   const phases = [
     {
@@ -142,6 +186,11 @@ const Sabhi = () => {
       ref={containerRef}
       className="min-h-screen relative overflow-hidden bg-gradient-to-br from-rose-900 via-purple-900 to-pink-900 animate-gradient-shift"
       onMouseMove={handleMouseMove}
+      onTouchMove={(e) => {
+        // Prevent default to avoid browser refresh on pull down
+        e.preventDefault();
+      }}
+      style={{ touchAction: 'none' }} // Prevent pull-to-refresh on mobile
     >
       <motion.div
         className="absolute inset-0 opacity-40"
@@ -152,55 +201,24 @@ const Sabhi = () => {
             'radial-gradient(circle at 50% 50%, rgba(251,113,133,0.2) 0%, transparent 50%)'
           ]
         }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 10, repeat: Infinity }}
       />
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjMjEyMTIxIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDVMNSAwWk02IDRMNCA2Wk0tMSAxTDEgLTFaIiBzdHJva2U9IiMzMTMxMzEiIHN0cm9rZS13aWR0aD0iMSI+PC9wYXRoPgo8L3N2Zz4=')] opacity-20">
-      </div>
 
-      <motion.div
-        className="absolute w-[50rem] h-[50rem] rounded-full blur-[180px] mix-blend-soft-light"
-        animate={{
-          x: mousePosition.x - 400,
-          y: mousePosition.y - 400,
-          background: [
-            'rgba(244,114,182,0.08)',
-            'rgba(216,180,254,0.08)',
-            'rgba(251,113,133,0.08)'
-          ],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{ 
-          type: 'spring', 
-          damping: 20, 
-          stiffness: 120,
-          scale: {
-            duration: 4,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }
-        }}
-      />
-      <motion.div
-        className="absolute pointer-events-none"
-        style={{ x: mousePosition.x - 10, y: mousePosition.y - 10 }}
-        transition={{ type: 'spring', damping: 15, stiffness: 150 }}
-      >
+      {mousePosition.x > 0 && !isMobile && (
         <motion.div
-          className="w-5 h-5 text-pink-400"
+          className="absolute w-64 h-64 rounded-full bg-gradient-to-r from-rose-500/10 via-purple-500/10 to-pink-500/10 blur-3xl pointer-events-none"
           animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 20, -20, 0]
+            x: mousePosition.x - 128,
+            y: mousePosition.y - 128,
           }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          💝
-        </motion.div>
-      </motion.div>
-      
+          transition={{ type: "spring", damping: 10, mass: 0.1 }}
+        />
+      )}
+
       {showParticles && (
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(50)].map((_, i) => (
-            <LuxuryParticle key={i} delay={i * 0.1} />
+          {[...Array(isMobile ? 20 : 50)].map((_, i) => (
+            <LuxuryParticle key={i} delay={i * 0.1} isMobile={isMobile} />
           ))}
         </div>
       )}
@@ -209,7 +227,7 @@ const Sabhi = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto text-center space-y-12 bg-black/30 backdrop-blur-3xl p-16 rounded-[3rem] shadow-2xl border border-amber-500/20"
+          className={`max-w-4xl mx-auto text-center space-y-12 bg-black/30 backdrop-blur-3xl ${isMobile ? 'p-8 rounded-[2rem]' : 'p-16 rounded-[3rem]'} shadow-2xl border border-amber-500/20`}
         >
           <AnimatePresence mode="wait">
             {phases.map((phase, index) => (
@@ -223,22 +241,28 @@ const Sabhi = () => {
                   className="space-y-8"
                 >
                   <motion.p 
-                    className={`text-2xl leading-relaxed font-serif ${phase.className}`}
+                    className={`${isMobile ? 'text-lg' : 'text-2xl'} leading-relaxed font-serif ${phase.className}`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1.5, delay: 0.5 }}
                   >
-                    {phase.text.split(' ').map((word, i) => (
-                      <motion.span
-                        key={i}
-                        initial={{ opacity: 0, y: 20, rotateX: 90 }}
-                        animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                        transition={{ delay: i * 0.1, type: "spring", stiffness: 100 }}
-                        className="inline-block mx-1"
-                      >
-                        <GlowingText>{word}</GlowingText>
-                      </motion.span>
-                    ))}
+                    {isMobile ? (
+                      // Simple rendering for mobile to improve performance
+                      phase.text
+                    ) : (
+                      // Fancy word-by-word animation for desktop
+                      phase.text.split(' ').map((word, i) => (
+                        <motion.span
+                          key={i}
+                          initial={{ opacity: 0, y: 20, rotateX: 90 }}
+                          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                          transition={{ delay: i * 0.1, type: "spring", stiffness: 100 }}
+                          className="inline-block mx-1"
+                        >
+                          <GlowingText>{word}</GlowingText>
+                        </motion.span>
+                      ))
+                    )}
                   </motion.p>
                 </motion.div>
               )
@@ -254,7 +278,7 @@ const Sabhi = () => {
             >
               <motion.div className="space-y-4 mb-8">
                 <motion.h3
-                  className="text-3xl bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent font-serif italic"
+                  className={`${isMobile ? 'text-2xl' : 'text-3xl'} bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent font-serif italic`}
                   animate={{
                     textShadow: [
                       '0 0 25px rgba(244,114,182,0.3)',
@@ -422,7 +446,7 @@ const Sabhi = () => {
                     ]
                   }}
                   transition={{ duration: 4, repeat: Infinity }}
-                  className="text-6xl md:text-7xl font-bold text-amber-500 my-16 font-serif italic"
+                  className={`${isMobile ? 'text-4xl' : 'text-6xl md:text-7xl'} font-bold text-amber-500 my-16 font-serif italic`}
                 >
                   Will you marry me?
                 </motion.h2>
@@ -435,7 +459,7 @@ const Sabhi = () => {
               >
                 <button
                   onClick={() => setShowRing(true)}
-                  className="group relative px-20 py-8 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-black rounded-full font-serif text-3xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_50px_rgba(251,191,36,0.5)]"
+                  className={`group relative ${isMobile ? 'px-10 py-6 text-2xl' : 'px-20 py-8 text-3xl'} bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-black rounded-full font-serif overflow-hidden transition-all duration-500 hover:shadow-[0_0_50px_rgba(251,191,36,0.5)]`}
                 >
                   <motion.span
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
@@ -466,12 +490,14 @@ const Sabhi = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="fixed inset-0 bg-black/70 backdrop-blur-xl flex items-center justify-center z-50"
+              onClick={() => isMobile && setShowRing(false)} // Allow closing on mobile with tap
             >
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", damping: 12 }}
-                className="bg-gradient-to-br from-slate-900 to-purple-900 p-16 rounded-[2rem] text-center max-w-3xl mx-4 shadow-[0_0_100px_rgba(251,191,36,0.3)] border border-amber-500/30 relative overflow-hidden"
+                className={`bg-gradient-to-br from-slate-900 to-purple-900 ${isMobile ? 'p-8' : 'p-16'} rounded-[2rem] text-center max-w-3xl mx-4 shadow-[0_0_100px_rgba(251,191,36,0.3)] border border-amber-500/30 relative overflow-hidden`}
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the modal itself
               >
                 <motion.div
                   className="absolute inset-0 opacity-30"
@@ -512,7 +538,7 @@ const Sabhi = () => {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.8 }}
-                    className="text-4xl font-bold text-amber-500 font-serif italic"
+                    className={`${isMobile ? 'text-3xl' : 'text-4xl'} font-bold text-amber-500 font-serif italic`}
                   >
                     <motion.span
                       animate={{
@@ -560,7 +586,7 @@ const Sabhi = () => {
                     transition={{ delay: 1.5 }}
                     className="space-y-6"
                   >
-                    <p className="text-2xl text-amber-300 font-serif leading-relaxed">
+                    <p className={`${isMobile ? 'text-xl' : 'text-2xl'} text-amber-300 font-serif leading-relaxed`}>
                       Our beautiful journey of seven years has led to this magical moment.
                       Every laugh, every tear, every shared dream has brought us here.
                     </p>
@@ -582,31 +608,33 @@ const Sabhi = () => {
                         Together forever, writing our love story...
                       </motion.div>
 
-                      <motion.div 
-                        className="flex gap-2 items-center justify-center flex-wrap"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 2.5 }}
-                      >
-                        {Array.from({ length: 7 }).map((_, i) => (
-                          <motion.div
-                            key={i}
-                            animate={{
-                              scale: [1, 1.2, 1],
-                              rotate: [0, 360],
-                              opacity: [0.5, 1, 0.5]
-                            }}
-                            transition={{
-                              duration: 4,
-                              repeat: Infinity,
-                              delay: i * 0.3
-                            }}
-                            className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold"
-                          >
-                            {i + 1}
-                          </motion.div>
-                        ))}
-                      </motion.div>
+                      {!isMobile && (
+                        <motion.div 
+                          className="flex gap-2 items-center justify-center flex-wrap"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 2.5 }}
+                        >
+                          {Array.from({ length: 7 }).map((_, i) => (
+                            <motion.div
+                              key={i}
+                              animate={{
+                                scale: [1, 1.2, 1],
+                                rotate: [0, 360],
+                                opacity: [0.5, 1, 0.5]
+                              }}
+                              transition={{
+                                duration: 4,
+                                repeat: Infinity,
+                                delay: i * 0.3
+                              }}
+                              className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold"
+                            >
+                              {i + 1}
+                            </motion.div>
+                          ))}
+                        </motion.div>
+                      )}
 
                       <motion.p
                         initial={{ opacity: 0 }}
