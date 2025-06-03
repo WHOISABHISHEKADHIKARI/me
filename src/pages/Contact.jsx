@@ -17,14 +17,14 @@ const Contact = () => {
     {
       icon: PhoneIcon,
       label: 'Phone',
-      value: '+977 9861234567',
-      href: 'tel:+9779861234567',
+      value: '+977 9855035482',
+      href: 'tel:+9779855035482',
       color: 'text-primary' // Updated color class
     },
     {
       icon: MapPinIcon,
       label: 'Location',
-      value: 'Kathmandu, Nepal',
+      value: 'Manahari, Nepal',
       href: 'https://maps.app.goo.gl/z4Q8vJHPd357Wk2f8', // Example link, replace if needed
       color: 'text-primary' // Updated color class
     }
