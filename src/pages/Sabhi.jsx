@@ -77,7 +77,7 @@ const Sabhi = () => {
 
   const correctPassword = '1254'; // You can change this to any password you want
 
-  // Improved mobile detection with touch capability check
+  // Improved mobile detection with iOS detection
   useEffect(() => {
     const checkMobile = () => {
       const isMobileDevice = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
@@ -87,22 +87,51 @@ const Sabhi = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     
-    // Prevent pull-to-refresh on mobile browsers but allow scrolling
+    // iOS-specific scrolling fix
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    
+    // Only apply pull-to-refresh prevention, not general scrolling prevention
     const preventPullToRefresh = (e) => {
+      // Don't interfere with multi-touch gestures
       if (e.touches.length !== 1) return;
+      
       const touchY = e.touches[0].clientY;
-      // Only prevent default when at the top of the page and pulling down
-      if (window.scrollY === 0 && touchY > 10) {
+      // Only prevent default when at the top of the page and pulling down significantly
+      // This allows normal scrolling to work while preventing only the refresh gesture
+      if (window.scrollY <= 5 && touchY > 30 && e.cancelable) {
         e.preventDefault();
       }
     };
 
-    // Add passive touch listeners for better scrolling performance
-    document.addEventListener('touchstart', preventPullToRefresh, { passive: false });
+    // For iOS, we need a different approach to handle scrolling
+    if (isIOS) {
+      // Make sure the body and html are scrollable
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+      document.body.style.height = '100%';
+      document.documentElement.style.height = '100%';
+      
+      // Add touch handlers with correct passive settings
+      document.addEventListener('touchstart', preventPullToRefresh, { passive: false });
+      document.addEventListener('touchmove', (e) => {
+        // Allow default scrolling behavior in most cases
+        // Only prevent the pull-to-refresh gesture
+        if (window.scrollY <= 5 && e.touches[0].clientY > 30 && e.cancelable) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    } else {
+      // Non-iOS devices
+      document.addEventListener('touchstart', preventPullToRefresh, { passive: false });
+    }
     
     return () => {
       window.removeEventListener('resize', checkMobile);
       document.removeEventListener('touchstart', preventPullToRefresh);
+      if (isIOS) {
+        document.removeEventListener('touchmove', preventPullToRefresh);
+      }
     };
   }, []);
 
@@ -217,7 +246,11 @@ const Sabhi = () => {
       className="min-h-screen relative overflow-y-auto overflow-x-hidden bg-gradient-to-br from-rose-900 via-purple-900 to-pink-900 animate-gradient-shift"
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
-      style={{ touchAction: 'pan-y' }} // Allow vertical scrolling but prevent horizontal
+      style={{
+        touchAction: 'auto', // Allow all touch actions by default
+        WebkitOverflowScrolling: 'touch', // Enable momentum scrolling on iOS
+        overscrollBehavior: 'none', // Prevent pull-to-refresh on modern browsers
+      }}
     >
       <motion.div
         className="absolute inset-0 opacity-40"
@@ -250,7 +283,7 @@ const Sabhi = () => {
         </div>
       )}
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 overflow-y-auto">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 overflow-visible">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
