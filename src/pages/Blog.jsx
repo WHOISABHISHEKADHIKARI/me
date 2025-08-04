@@ -113,6 +113,54 @@ const Blog = () => {
       <Helmet>
         <title>Blog | Abhishek Adhikari - Insights on Design, Development & Innovation</title>
         <meta name="description" content="Read insights on UI/UX design, web development, agricultural technology, and digital innovation by Abhishek Adhikari." />
+        <meta name="keywords" content="Abhishek Adhikari blog, UI/UX articles, development insights, agricultural innovation, Nepal tech blog, design tutorials, web development tips" />
+        <link rel="canonical" href="https://abhishekadhikari.com/blog" />
+        
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content="Blog | Abhishek Adhikari - Design & Development Insights" />
+        <meta property="og:description" content="Read insights on UI/UX design, web development, agricultural technology, and digital innovation by Abhishek Adhikari." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://abhishekadhikari.com/blog" />
+        <meta property="og:image" content="https://abhishekadhikari.com/blog-og-image.jpg" />
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Blog | Abhishek Adhikari - Design & Development Insights" />
+        <meta name="twitter:description" content="Read insights on UI/UX design, web development, agricultural technology, and digital innovation." />
+        <meta name="twitter:image" content="https://abhishekadhikari.com/blog-twitter-image.jpg" />
+        
+        {/* Structured Data for Blog */}
+        <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          "name": "Abhishek Adhikari's Blog",
+          "description": "Insights on UI/UX design, web development, agricultural technology, and digital innovation",
+          "url": "https://abhishekadhikari.com/blog",
+          "author": {
+            "@type": "Person",
+            "name": "Abhishek Adhikari",
+            "url": "https://abhishekadhikari.com"
+          },
+          "publisher": {
+            "@type": "Person",
+            "name": "Abhishek Adhikari"
+          },
+          "blogPost": blogPosts.map(post => ({
+            "@type": "BlogPosting",
+            "headline": post.title,
+            "description": post.excerpt,
+            "datePublished": post.date,
+            "author": {
+              "@type": "Person",
+              "name": post.author
+            },
+            "image": post.image,
+            "url": `https://abhishekadhikari.com/blog/${post.id}`,
+            "keywords": post.tags.join(", ")
+          }))
+        })}
+        </script>
       </Helmet>
       
       <div className="min-h-screen bg-background text-foreground p-4 md:p-8 pt-24 md:pt-28">
@@ -158,8 +206,11 @@ const Blog = () => {
                   <div className="aspect-w-16 aspect-h-9 relative overflow-hidden">
                     <img
                       src={post.image}
-                      alt={post.title}
+                      alt={`${post.title} - Blog post by Abhishek Adhikari`}
                       className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
+                      loading="lazy"
+                      width="800"
+                      height="400"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute top-4 left-4">
@@ -266,8 +317,11 @@ const Blog = () => {
                   <div className="relative overflow-hidden">
                     <img
                       src={post.image}
-                      alt={post.title}
+                      alt={`${post.title} - Blog post by Abhishek Adhikari`}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
+                      loading="lazy"
+                      width="800"
+                      height="400"
                     />
                     <div className="absolute top-3 left-3">
                       <span className="bg-primary text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full">
