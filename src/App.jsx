@@ -8,6 +8,7 @@ import Contact from './pages/Contact';
 import Services from './pages/Services'; // Import the new Services page
 import Experience from './pages/Experience'; // Import the new Experience page
 import Testimonials from './pages/Testimonials'; // Import the new Testimonials page
+import Blog from './pages/Blog'; // Import the new Blog page
 import NotFound from './pages/NotFound';
 import Sabhi from './pages/Sabhi';
 
@@ -46,6 +47,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/blog" element={<Blog />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/services" element={<Services />} />
               <Route path="/experience" element={<Experience />} />
@@ -81,6 +83,12 @@ const DynamicHelmet = () => {
           title: `About ${baseTitle} | UI/UX Expert & Agri-Tech Specialist`,
           description: "Learn about Abhishek Adhikari's 22+ years journey in UI/UX design, product strategy, and agricultural innovation in Nepal.",
           keywords: "Abhishek Adhikari about, UI/UX portfolio, Manahari designer, Nepal tech expert"
+        };
+      case "/blog":
+        return {
+          title: `Blog | ${baseTitle} - Insights on Design, Development & Innovation`,
+          description: "Read insights on UI/UX design, web development, agricultural technology, and digital innovation by Abhishek Adhikari.",
+          keywords: "Abhishek Adhikari blog, UI/UX articles, development insights, agricultural innovation, Nepal tech blog"
         };
       // Add cases for other routes
     }
