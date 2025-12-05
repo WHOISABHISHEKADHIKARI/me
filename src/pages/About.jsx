@@ -403,20 +403,22 @@ const About = () => {
                     <MapPinIcon className="h-5 w-5 mr-2" />
                     <span>Hetauda, Nepal</span>
                   </motion.div>
-                  <motion.div 
+                  <motion.a 
+                    href="mailto:abhishekadhikari1254@gmail.com"
                     className="flex items-center hover:text-green-400 transition-colors cursor-pointer"
                     whileHover={{ scale: 1.05 }}
                   >
                     <EnvelopeIcon className="h-5 w-5 mr-2" />
-                    <span>abhishek@example.com</span>
-                  </motion.div>
-                  <motion.div 
+                    <span>abhishekadhikari1254@gmail.com</span>
+                  </motion.a>
+                  <motion.a 
+                    href="tel:+9779865412482"
                     className="flex items-center hover:text-purple-400 transition-colors cursor-pointer"
                     whileHover={{ scale: 1.05 }}
                   >
                     <PhoneIcon className="h-5 w-5 mr-2" />
-                    <span>+977-XXXXXXXXX</span>
-                  </motion.div>
+                    <span>+9779865412482</span>
+                  </motion.a>
                 </motion.div>
               </motion.div>
 
