@@ -266,6 +266,25 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Abhishek Adhikari",
+          "jobTitle": "UI/UX Designer & Product Strategist",
+          "url": "https://abhishekadhikari.com/about",
+          "email": "mailto:abhishekadhikari1254@gmail.com",
+          "telephone": "+9779865412482",
+          "sameAs": [
+            "https://www.aayorides.com/"
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Hetauda",
+            "addressCountry": "NP"
+          }
+        })}</script>
+      </Helmet>
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div 
@@ -1178,3 +1197,4 @@ const About = () => {
 };
 
 export default About;
+import { Helmet } from 'react-helmet-async';

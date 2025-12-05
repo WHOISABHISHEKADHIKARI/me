@@ -1,22 +1,8 @@
 User-agent: *
 Allow: /
 
-# Important pages
-Allow: /about
-Allow: /projects
-Allow: /services
-Allow: /experience
-Allow: /testimonials
-Allow: /contact
-Allow: /blog
-
-# Sitemap
 Sitemap: https://abhishekadhikari.com/sitemap.xml
 
-# Optimize crawling
-Crawl-delay: 1
-
-# Block unnecessary files
 Disallow: /node_modules/
 Disallow: /src/
 Disallow: /*.json$
@@ -25,9 +11,29 @@ Disallow: /package*.json
 Disallow: /.git/
 Disallow: /.env*
 
-# Allow important assets
-Allow: /public/
 Allow: /images/
 Allow: /favicon.svg
 Allow: /robots.txt
 Allow: /sitemap.xml
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /images/
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 2

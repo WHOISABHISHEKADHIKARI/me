@@ -17,6 +17,7 @@ function App() {
   return (
     <HelmetProvider>
       <Router>
+        <DynamicHelmet />
         <Helmet>
           <title>Abhishek Adhikari | UI/UX Designer & Product Strategist</title>
           <meta name="description" content="Innovative UI/UX Designer, Product Strategist, and Agri-Tech specialist with 22+ years of experience. Crafting user-centric digital experiences and driving product innovation." />
@@ -77,14 +78,14 @@ const DynamicHelmet = () => {
       case "/":
         return {
           title: `${baseTitle} | UI/UX Designer & Product Strategist in Nepal`,
-          description: "Award-winning UI/UX designer and product strategist from Nepal with 22+ years of experience in digital innovation and agricultural technology.",
-          keywords: "Abhishek Adhikari, UI/UX Designer Nepal, Product Strategy, Agricultural Technology"
+          description: "UI/UX designer and product strategist in Nepal delivering fast, accessible, mobile‑first experiences and agri‑tech solutions.",
+          keywords: "Abhishek Adhikari, UI/UX Designer Nepal, Product Strategy, Agricultural Technology, SEO expert of Nepal, Marketing experts of Nepal"
         };
         case '/contact':
           return {
             title: 'Contact | Abhishek Adhikari - Get in Touch for UI/UX & Agri-Tech Projects',
             description: 'Contact Abhishek Adhikari for UI/UX design projects, agricultural technology consulting, and sustainable innovation services in Nepal.',
-            keywords: 'contact Abhishek Adhikari, UI/UX designer Nepal contact, agricultural technology consultant, hire UI/UX designer Nepal, design services contact',
+            keywords: 'contact Abhishek Adhikari, UI/UX designer Nepal contact, agricultural technology consultant, hire UI/UX designer Nepal, design services contact, SEO expert of Nepal',
             canonical: 'https://abhishekadhikari.com/contact',
             ogType: 'website',
             ogImage: 'https://abhishekadhikari.com/contact-og-image.jpg'
@@ -110,8 +111,8 @@ const DynamicHelmet = () => {
       case "/about":
         return {
           title: `About ${baseTitle} | UI/UX Expert & Agri-Tech Specialist`,
-          description: "Learn about Abhishek Adhikari's 22+ years journey in UI/UX design, product strategy, and agricultural innovation in Nepal.",
-          keywords: "Abhishek Adhikari about, UI/UX portfolio, Manahari designer, Nepal tech expert",
+          description: "Learn about Abhishek Adhikari's journey in UI/UX design, product strategy, and agricultural innovation in Nepal.",
+          keywords: "Abhishek Adhikari about, UI/UX portfolio, Nepal tech expert, Marketing experts of Nepal, SEO expert of Nepal",
           canonical: "https://abhishekadhikari.com/about",
           ogType: "profile",
           ogImage: "https://abhishekadhikari.com/about-og-image.jpg"
@@ -129,7 +130,7 @@ const DynamicHelmet = () => {
         return {
           title: `Projects | ${baseTitle} - UI/UX Design & Agri-Tech Portfolio`,
           description: "Explore innovative UI/UX design projects and agricultural technology solutions by Abhishek Adhikari. View case studies and project outcomes.",
-          keywords: "Abhishek Adhikari projects, UI/UX portfolio, agricultural technology projects, design case studies, Nepal designer portfolio",
+          keywords: "Abhishek Adhikari projects, UI/UX portfolio, agricultural technology projects, design case studies, Nepal designer portfolio, Agri entrepreneurship of Nepal",
           canonical: "https://abhishekadhikari.com/projects",
           ogType: "website",
           ogImage: "https://abhishekadhikari.com/projects-og-image.jpg"
@@ -138,7 +139,7 @@ const DynamicHelmet = () => {
         return {
           title: `Services | ${baseTitle} - UI/UX Design & Agricultural Technology`,
           description: "Professional UI/UX design, agricultural technology consulting, and sustainable innovation services by Abhishek Adhikari in Nepal.",
-          keywords: "UI/UX design services Nepal, agricultural technology consulting, sustainable design services, Figma expert Nepal, product design services",
+          keywords: "UI/UX design services Nepal, agricultural technology consulting, sustainable design services, Figma expert Nepal, product design services, SEO expert of Nepal, Marketing experts of Nepal",
           canonical: "https://abhishekadhikari.com/services",
           ogType: "website",
           ogImage: "https://abhishekadhikari.com/services-og-image.jpg"
